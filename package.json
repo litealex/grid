@@ -1,0 +1,28 @@
+{
+  "name": "grid",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/litealex/grid.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/litealex/grid/issues"
+  },
+  "homepage": "https://github.com/litealex/grid",
+  "devDependencies": {
+    "express": "^4.12.3",
+    "gulp": "^3.8.11",
+    "gulp-browserify": "^0.5.1",
+    "gulp-concat": "^2.5.2",
+    "gulp-less": "^3.0.2",
+    "react": "^0.13.1",
+    "reactify": "^1.1.0"
+  }
+}
