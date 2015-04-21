@@ -4,12 +4,20 @@ var express = require('express'),
 
 app.use(express.static('./dist'));
 app.get('/data', function (req, res) {
-    var header = [];
-    for (var i = 0; i < 20; i++) {
+    var header = [], rows = [], i, j, row;
+    for (i = 0; i < 20; i++) {
         header.push({filedId: 'filed' + i, label: 'Поле №' + (i + 1)});
     }
 
-    //for(var)
+    for (i = 0; i < 1000; i++) {
+        row = {};
+        header.forEach(function (cell) {
+            row[cell.filedId] = i;
+        });
+        rows.push(row);
+    }
+
+    res.send({header: header, rows: rows});
 
 });
 app.get('/', function (req, res) {
