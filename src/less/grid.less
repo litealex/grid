@@ -1,16 +1,22 @@
 @import "variables.less";
 .qtable {
-  &__row {
-    display: table-row;
+  display: table;
 
+  &__row {
+    position: relative;
     &--header {
       background-color: @header-bg-color;
     }
   }
+
+  &__body {
+  }
+
   &__cell {
     border-bottom: 1px solid @cell-border-color;
     border-right: 1px solid @cell-border-color;
     display: table-cell;
-
+    height: 100%;
+    box-sizing: border-box;
   }
 }

@@ -6,7 +6,7 @@ var Body = React.createClass({
         var rows = this.props.rows.map(function(row){
             return (<Row metadata={this.props.header} cells={row} />)
         }.bind(this));
-        return (<div>{rows}</div>);
+        return (<div className="qtable__body">{rows}</div>);
     }
 });
 

@@ -1,5 +1,7 @@
 var React = require('react'),
-    StylesStore = require('../stores/StylesStore');
+    StylesStore = require('../stores/StylesStore'),
+    HeaderActions = require('../actions/HeaderActions'),
+    HeaderStore = require('../stores/HeaderStore');
 
 var Header = React.createClass({
     style: null,
@@ -8,17 +10,27 @@ var Header = React.createClass({
             this.style = document.createElement('style');
             document.head.appendChild(this.style);
         }
-        this.style.innerText = StylesStore.getStyle(this.props.gridId, this.props.header);
+        var style = StylesStore.getStyle(this.props.gridId, this.props.header);
+        if (this.style.textContent !== undefined) {
+            this.style.textContent = style;
+        } else {
+            this.style.innerText = style;
+        }
     },
+
+    _onPin:function(fieldId){
+        HeaderActions.pinColumn(fieldId);
+    },
+
     render: function () {
         this.setStyle();
         var header = this.props.header.map(function (cell) {
             var cellClass = 'qtable__cell ' + StylesStore.getColumnClassName(cell.fieldId);
             return (
-                <div className={cellClass}>{cell.label}</div>
+                <div onClick={this._onPin.bind(this, cell.fieldId)} className={cellClass}>{cell.label}</div>
             )
-        });
-        return (<div className="qtable__row--header">{header}</div>);
+        }.bind(this));
+        return (<div className="qtable__row qtable__row--header">{header}</div>);
     }
 });
 

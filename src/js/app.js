@@ -5,7 +5,7 @@ var Grid = require('./components/grid'),
         getInitialState: function(){
             return {
                 header: [],
-                rows: [],
+                rows: []
             };
         },
         componentDidMount: function(){

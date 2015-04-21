@@ -10,9 +10,8 @@ module.exports = {
     getStyle: function (gridId, metadata) {
         var gridClass = '.' + this.getGridClassName(gridId);
         return metadata.map(function (cell) {
-            console.log(cell);
             return gridClass + ' .' + this.getColumnClassName(cell.fieldId)
-                + '{ width: ' + cell.width + 'px;}';
+                + '{ min-width: ' + cell.width + 'px; width: ' + cell.width + 'px;}';
         }.bind(this)).join('');
     }
 };

@@ -1,6 +1,7 @@
 var gulp = require('gulp'),
     less = require('gulp-less'),
     browserify = require('gulp-browserify'),
+    nodemon = require('gulp-nodemon'),
     concat = require('gulp-concat');
 
 gulp.task('browserify', function () {
@@ -22,8 +23,14 @@ gulp.task('less', function(){
         .pipe(gulp.dest('dist/css'));
 });
 
+gulp.task('server', function(){
+    nodemon({
+        script: './server/server.js'
+    })
+});
+
 gulp.task('default', ['browserify', 'copy', 'less']);
 
-gulp.task('watch', function () {
+gulp.task('dev', ['server'],function () {
     gulp.watch('src/**/*.*', ['default']);
-})
+});

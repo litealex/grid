@@ -1,7 +1,9 @@
 var React = require('react'),
     Header = require('./header'),
     Body = require('./body'),
-    StylesStore = require('../stores/StylesStore');
+    StylesStore = require('../stores/StylesStore'),
+    GridActions = require('../actions/GridActions');
+
 
 var Grid =
     React.createClass({
