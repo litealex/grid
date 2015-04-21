@@ -1,14 +1,11 @@
 var React = require('react'),
-    Header = require('./header');
+    Row = require('./row');
 
 var Body = React.createClass({
-
     render: function () {
-        console.log(this.props.rows);
-        var rows = this.props.rows.map(function(){
-            return (<Header header={this.props.header} />)
+        var rows = this.props.rows.map(function(row){
+            return (<Row metadata={this.props.header} cells={row} />)
         }.bind(this));
-
         return (<div>{rows}</div>);
     }
 });

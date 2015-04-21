@@ -1,11 +1,16 @@
-.qtable{
-  &__row{
+@import "variables.less";
+.qtable {
+  &__row {
     display: table-row;
-    border: 1px solid black;
+
+    &--header {
+      background-color: @header-bg-color;
+    }
   }
   &__cell {
+    border-bottom: 1px solid @cell-border-color;
+    border-right: 1px solid @cell-border-color;
     display: table-cell;
-    border: 1px solid green;
-    background-color: #0040D0;
+
   }
 }
