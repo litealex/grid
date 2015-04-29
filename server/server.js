@@ -7,9 +7,10 @@ app.get('/data', function (req, res) {
     var header = [], rows = [], i, j, row;
     for (i = 0; i < 20; i++) {
         header.push({
-            fieldId: 'filed' + i,
+            fieldId: 'field' + i,
             label: 'Поле №' + (i + 1),
-            width: 200
+            width: 200,
+            isPin: i < 2
         });
     }
 

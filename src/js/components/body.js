@@ -1,29 +1,65 @@
 var React = require('react'),
-    Row = require('./row');
+    TopRow = require('./toprow'),
+    LastRow = require('./lastrow'),
+    Row = require('./row'),
+    StylesStore = require('../stores/StylesStore'),
+    StylesActions = require('../actions/StylesActions');
+
+
+function getStateFromStore(gridId) {
+    return {
+        width: StylesStore.getGridWidth(gridId),
+        height: StylesStore.getGridHeight(gridId)
+    };
+}
+
 
 var Body = React.createClass({
     getInitialState: function () {
-        return {
-            width: 850
-        };
+        return getStateFromStore();
     },
-    componentWillMount: function () {
-        window.addEventListener('resize', this.setWidth);
+    componentDidMount: function () {
+        StylesStore.addChangeListeners(this._onChange, this.props.gridId);
+
+        this.getDOMNode().addEventListener('scroll', this._onScroll)
     },
-    setWidth: function () {
-        this.setState({width: window.innerWidth});
+    componentWillUnmount: function () {
+        StylesStore.removeChangeListener(this._onChange, this.props.gridId);
+    },
+    _onChange: function () {
+        this.setState(getStateFromStore(this.props.gridId));
+    },
+    _onScroll: function (e) {
+        StylesActions.scroll(this.props.gridId,{
+            top: e.target.scrollTop,
+            left: e.target.scrollLeft
+        });
     },
     render: function () {
-        var renderRows = null;
+        var renderRows = null,
+            rows,
+            style = {
+                width: this.state.width,
+                height: this.state.height
+            };
+
         if (this.props.rows.length > 100) {
             renderRows = this.props.rows.slice(0, 100);
         } else {
             renderRows = this.props.rows;
         }
-        var rows = renderRows.map(function (row) {
+
+        rows = renderRows.map(function (row) {
             return (<Row metadata={this.props.header} cells={row} />)
         }.bind(this));
-        return (<div className="qtable__body">{rows}</div>);
+
+
+        return (
+            <div style={style} className="qtable__body">
+                <TopRow></TopRow>
+            {rows}
+                <LastRow></LastRow>
+            </div>);
     }
 });
 

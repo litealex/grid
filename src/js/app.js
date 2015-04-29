@@ -27,3 +27,5 @@ var Grid = require('./components/grid'),
 
 React.render(<App />, document.getElementById('main'));
 
+React.render(<App />, document.getElementById('main2'));
+

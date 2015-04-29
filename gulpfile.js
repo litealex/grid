@@ -29,8 +29,14 @@ gulp.task('server', function(){
     })
 });
 
+
+
 gulp.task('default', ['browserify', 'copy', 'less']);
 
-gulp.task('dev', ['server'],function () {
+
+gulp.task('watch', function () {
     gulp.watch('src/**/*.*', ['default']);
 });
+
+gulp.task('dev', ['server', 'watch']);
+

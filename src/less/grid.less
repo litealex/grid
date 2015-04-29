@@ -6,12 +6,17 @@
     position: relative;
     &--header {
       background-color: @header-bg-color;
+    }
+    &--top {
+
+    }
+    &--fixed {
       position: fixed;
-      z-index: 1;
     }
   }
 
   &__body {
+    overflow: auto;
   }
 
   &__cell {
@@ -20,5 +25,8 @@
     display: table-cell;
     height: 100%;
     box-sizing: border-box;
+  }
+  &__header {
+    overflow: hidden;
   }
 }

@@ -8,6 +8,12 @@ var GridActions = {
             fieldId: fieldId
         });
     }
+    ,resize: function(width){
+        GridDispatcher.handleViewAction({
+            actionType: GridConstants.RESIZE,
+            width:width
+        });
+    }
 };
 
 
