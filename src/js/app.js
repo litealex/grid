@@ -1,6 +1,7 @@
 var Grid = require('./components/grid'),
     React = require('react'),
     $ = require('jquery'),
+    GridStore = require('./actions/GridActions')
     App = React.createClass({
         getInitialState: function(){
             return {

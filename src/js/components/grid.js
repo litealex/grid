@@ -1,6 +1,7 @@
 var React = require('react'),
     Header = require('./header'),
     Body = require('./body'),
+    HScroller = require('./HScroller.react'),
     $ = require('jquery'),
     StylesStore = require('../stores/StylesStore'),
     StylesActions = require('../actions/StylesActions'),
@@ -22,10 +23,14 @@ var Grid =
             StylesActions.resize(this.gridId, $parent.width());
         },
         componentDidMount: function () {
+
             $(window).on('resize', this._resize.bind(this));
             this._resize();
         },
 
+        componentWillReceiveProps: function(nextProps){
+            GridActions.update(this.gridId, nextProps.header, nextProps.rows);
+        },
         gridId: null,
         componentWillMount: function () {
             this.gridId = Grid.getNextId();
@@ -36,6 +41,7 @@ var Grid =
                 <div className={gridClass}>
                     <Header gridId={this.gridId} header={this.props.header} />
                     <Body gridId={this.gridId} header={this.props.header} rows={this.props.rows}/>
+                    <HScroller />
                 </div>)
         }
     });

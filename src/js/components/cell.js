@@ -1,3 +1,15 @@
-/**
- * Created by ZakharovAA on 20.04.2015.
- */
+var React = require('react'),
+    StylesStore = require('../stores/StylesStore');
+
+
+var Cell = React.createClass({
+    getInitialState: function () {
+    },
+
+    render: function () {
+        return (<div></div>);
+    }
+});
+
+
+module.exports = Cell;

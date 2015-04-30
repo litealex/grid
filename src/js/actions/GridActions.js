@@ -2,10 +2,12 @@ var GridDispatcher = require('../dispatcher/GridDispatcher');
 var GridConstants = require('../constants/GridConstants');
 
 var GridActions = {
-    update: function(fieldId){
+    update: function(gridId, header, rows){
         GridDispatcher.handleViewAction({
             actionType: GridConstants.UPDATE_DATA,
-            fieldId: fieldId
+            gridId: gridId,
+            rows: rows,
+            header: header
         });
     }
     ,resize: function(width){

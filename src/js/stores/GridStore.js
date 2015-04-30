@@ -10,6 +10,7 @@ var CHANGE_EVENT = 'change';
 
 
 function update(data) {
+    console.log(data);
     _header = data.header;
     _rows = data.rows;
 }
@@ -28,10 +29,9 @@ var GridStore = assign({}, EventEmitter.prototype, {
         var action = payload.action;
         switch (action.actionType) {
             case GridConstants.UPDATE_DATA:
-                update(action);
+                update({rows: action.rows, header: action.header});
                 GridStore.emitChange();
                 break;
-
         }
         return true;
     })
