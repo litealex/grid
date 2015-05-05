@@ -20,21 +20,13 @@ var Body = React.createClass({
         return getStateFromStore();
     },
     componentDidMount: function () {
+        this.node = this.getDOMNode();
         StylesStore.addChangeListeners(this._onChange, this.props.gridId);
-
-        this.getDOMNode().addEventListener('scroll', this._onScroll)
+        StylesStore.addChangeListeners(this._onScroll, this.props.gridId, StylesStore.EVENTS.SCROLL);
     },
     componentWillUnmount: function () {
         StylesStore.removeChangeListener(this._onChange, this.props.gridId);
-    },
-    _onChange: function () {
-        this.setState(getStateFromStore(this.props.gridId));
-    },
-    _onScroll: function (e) {
-        //StylesActions.scroll(this.props.gridId,{
-        //    top: e.target.scrollTop,
-        //    left: e.target.scrollLeft
-        //});
+        StylesStore.removeChangeListener(this._onScroll, this.props.gridId, StylesStore.EVENTS.SCROLL);
     },
     render: function () {
         var renderRows = null,
@@ -61,7 +53,15 @@ var Body = React.createClass({
             {rows}
                 <LastRow></LastRow>
             </div>);
+    },
+    node: null,
+    _onChange: function () {
+        this.setState(getStateFromStore(this.props.gridId));
+    },
+    _onScroll: function () {
+        this.node.scrollLeft = StylesStore.getRealScrollLeft(this.props.gridId);
     }
+
 });
 
 module.exports = Body;

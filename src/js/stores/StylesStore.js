@@ -40,7 +40,16 @@ var StylesStore = assign({}, EventEmitter.prototype, {
 
         return left;
     },
+    getRealScrollLeft: function (gridId) {
+        var relative = this.getScrollLeft(gridId);
+        var holderWidth = this.getHolderWidth(gridId);
+        var fullWidth = this.getGridFullWidth(gridId);
+        var scrollBarWidth = this.getGridWidth(gridId);
 
+
+        return (relative / (scrollBarWidth - holderWidth)) * (fullWidth - scrollBarWidth);
+
+    },
     getGridClassName: function (gridId) {
         return StylesConstants.GRID_STYLE_PREFIX + gridId;
     },

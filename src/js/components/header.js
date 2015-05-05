@@ -76,7 +76,7 @@ var Header = React.createClass({
         this.setState(getStateFromStore(this.props.gridId));
     },
     _onScroll: function () {
-        this.node.scrollLeft = StylesStore.getScrollLeft(this.props.gridId)
+        this.node.scrollLeft = StylesStore.getRealScrollLeft(this.props.gridId);
     }
 });
 
