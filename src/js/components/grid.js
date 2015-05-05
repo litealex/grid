@@ -41,7 +41,7 @@ var Grid =
                 <div className={gridClass}>
                     <Header gridId={this.gridId} header={this.props.header} />
                     <Body gridId={this.gridId} header={this.props.header} rows={this.props.rows}/>
-                    <HScroller />
+                    <HScroller gridId={this.gridId} />
                 </div>)
         }
     });

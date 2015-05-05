@@ -2,13 +2,14 @@ var React = require('react'),
     $ = require('jquery'),
     StylesStore = require('../stores/StylesStore'),
     HeaderActions = require('../actions/HeaderActions'),
-    HeaderStore = require('../stores/HeaderStore'),
+    GridStore = require('../stores/GridStore'),
     StylesStore = require('../stores/StylesStore');
+
 
 function getStateFromStore(gridId) {
     return {
         width: StylesStore.getGridWidth(gridId),
-        scrollLeft: StylesStore.getScrollLeft(gridId)
+        fullWidth: StylesStore.getGridFullWidth(gridId)
     }
 }
 
@@ -33,25 +34,30 @@ var Header = React.createClass({
     _onPin: function (fieldId) {
         HeaderActions.pinColumn(fieldId);
     },
-
+    node: null,
     componentDidMount: function () {
+
+        this.node = this.getDOMNode();
+        GridStore.addChangeListeners(this._onChange, this.props.gridId);
         StylesStore.addChangeListeners(this._onChange, this.props.gridId);
+        StylesStore.addChangeListeners(this._onScroll, this.props.gridId, StylesStore.EVENTS.SCROLL);
     },
     componentWillUnmount: function () {
+        GridStore.removeChangeListener(this._onChange, this.props.gridId);
         StylesStore.removeChangeListener(this._onChange, this.props.gridId);
+        StylesStore.removeChangeListener(this._onScroll, this.props.gridId, StylesStore.EVENTS.SCROLL);
     },
 
     getInitialState: function () {
-        return {
-            style: {}
-        };
+        return getStateFromStore(this.props.gridId);
     },
     render: function () {
         var headerStyle = {
             width: this.state.width
         };
+
         var rowStyle = {
-            marginLeft: -this.state.scrollLeft
+            width: this.state.fullWidth
         };
 
         this.setStyle();
@@ -68,6 +74,9 @@ var Header = React.createClass({
     },
     _onChange: function () {
         this.setState(getStateFromStore(this.props.gridId));
+    },
+    _onScroll: function () {
+        this.node.scrollLeft = StylesStore.getScrollLeft(this.props.gridId)
     }
 });
 

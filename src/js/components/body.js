@@ -3,6 +3,7 @@ var React = require('react'),
     LastRow = require('./lastrow'),
     Row = require('./row'),
     StylesStore = require('../stores/StylesStore'),
+    GridStore = require('../stores/GridStore'),
     StylesActions = require('../actions/StylesActions');
 
 
@@ -30,10 +31,10 @@ var Body = React.createClass({
         this.setState(getStateFromStore(this.props.gridId));
     },
     _onScroll: function (e) {
-        StylesActions.scroll(this.props.gridId,{
-            top: e.target.scrollTop,
-            left: e.target.scrollLeft
-        });
+        //StylesActions.scroll(this.props.gridId,{
+        //    top: e.target.scrollTop,
+        //    left: e.target.scrollLeft
+        //});
     },
     render: function () {
         var renderRows = null,

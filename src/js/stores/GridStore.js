@@ -3,19 +3,20 @@ var EventEmitter = require('events').EventEmitter;
 var GridConstants = require('../constants/GridConstants');
 var assign = require('object-assign');
 
-var _header = [];
-var _rows = [];
+var _data = {};
 
 var CHANGE_EVENT = 'change';
 
 
-function update(data) {
-    console.log(data);
-    _header = data.header;
-    _rows = data.rows;
+function update(gridId, data) {
+    _data[gridId] = data;
 }
 
 var GridStore = assign({}, EventEmitter.prototype, {
+    getHeader: function (gridId) {
+        var data = _data[gridId];
+        return data ? data.header : [];
+    },
     emitChange: function () {
         this.emit(CHANGE_EVENT);
     },
@@ -29,7 +30,7 @@ var GridStore = assign({}, EventEmitter.prototype, {
         var action = payload.action;
         switch (action.actionType) {
             case GridConstants.UPDATE_DATA:
-                update({rows: action.rows, header: action.header});
+                update(action.gridId, {rows: action.rows, header: action.header});
                 GridStore.emitChange();
                 break;
         }

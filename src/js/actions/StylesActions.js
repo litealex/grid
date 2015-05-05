@@ -1,5 +1,5 @@
 var GridDispatcher = require('../dispatcher/GridDispatcher');
-var StylesConstants = require('../constants/styles');
+var StylesConstants = require('../constants/StylesConstants');
 
 var StylesActions = {
     resize: function (gridId, width) {
@@ -9,11 +9,11 @@ var StylesActions = {
             width: width
         });
     },
-    scroll: function (gridId, scroll) {
+    hScroll: function (gridId, scrollSize) {
         GridDispatcher.handleViewAction({
-            actionType: StylesConstants.SCROLL,
+            actionType: StylesConstants.H_SCROLL,
             gridId: gridId,
-            scroll: scroll
+            scrollSize: scrollSize
         });
     }
 };

@@ -1,4 +1,5 @@
 var gulp = require('gulp'),
+    gutil = require('gulp-util')
     less = require('gulp-less'),
     browserify = require('gulp-browserify'),
     nodemon = require('gulp-nodemon'),
@@ -7,6 +8,7 @@ var gulp = require('gulp'),
 gulp.task('browserify', function () {
     gulp.src('./src/js/app.js')
         .pipe(browserify({transform: 'reactify'}))
+        .on('error', gutil.log)
         .pipe(concat('grid.js'))
         .pipe(gulp.dest('dist/js'))
 });
