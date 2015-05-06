@@ -9,11 +9,19 @@ var StylesActions = {
             width: width
         });
     },
+
     hScroll: function (gridId, scrollSize) {
         GridDispatcher.handleViewAction({
             actionType: StylesConstants.H_SCROLL,
             gridId: gridId,
             scrollSize: scrollSize
+        });
+    },
+    pinColumn: function (gridId, fieldId) {
+        GridDispatcher.handleViewAction({
+            actionType: StylesConstants.PIN_COLUMN,
+            gridId: gridId,
+            fieldId: fieldId
         });
     }
 };

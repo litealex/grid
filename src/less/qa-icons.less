@@ -1,0 +1,173 @@
+@imgUrl: "../i/";
+
+
+// .btn{
+// 	[class^="qa-icon-"], [class*="qa-icon-"]{
+// 		margin-right: 10px;
+// 	}
+// 	&:hover{
+// 		[class^="qa-icon-"], [class*="qa-icon-"]{
+// 			background-position-x: -19px;
+// 		}
+// 	}
+// }
+// .btn-group{
+// 	.btn{
+// 		[class^="qa-icon-"], [class*="qa-icon-"]{
+// 			margin-right: 0;
+// 		}
+// 	}
+// }
+.size(@w, @h){
+  width: @w;
+  height: @h;
+  display: inline-block;
+}
+
+.sprite(@width: 0, @height: 0){
+	background-image: url('@{imgUrl}icon-sprite.png');
+	background-position: @width @height;
+}
+
+//[class^="qa-icon-"], [class*="qa-icon-"]{
+//	display: inline-block;
+//	vertical-align: middle;
+//	.square(20px);
+//}
+//
+//.qa-icon-add{
+//	.square(18px);
+//	.sprite(0, -133px);
+//}
+//.qa-icon-full-grid{
+//	.square(18px);
+//
+//	.sprite(0, -19px);
+//}
+//.qa-icon-dynamic-grid{
+//	.square(18px);
+//	.sprite(0, 0);
+//}
+//.qa-icon-delete{
+//	.square(18px);
+//	.sprite(0, -114px);
+//}
+//.qa-icon-revise{
+//	.square(18px);
+//	.sprite(0, -95px);
+//}
+//.qa-icon-protocol{
+//	.square(18px);
+//	.sprite(0, -76px);
+//}
+//.qa-icon-send{
+//	.square(18px);
+//	.sprite(0, -57px);
+//}
+//.qa-icon-print{
+//	.square(18px);
+//	.sprite(0, -38px);
+//}
+
+.qa-icon-col-lock{
+	.size(18px, 18px);
+	.sprite(27px, -171px);
+	margin-top: -5px;
+	
+	&:hover{
+		cursor: pointer;
+		background-position-x: -19px;
+	}
+	&.active{
+		border: 5px solid #fff;
+		background-position-x: -19px;
+	}
+}
+
+//.qa-icon-prev{
+//	.size(8px, 13px);
+//	.sprite(0, -208px);
+//
+//}
+//.qa-icon-next{
+//	.size(8px, 13px);
+//	.sprite(0, -228px);
+//
+//}
+//.qa-icon-paw{
+//	.size(11px, 13px);
+//	.sprite(0, -190px);
+//}
+//.qa-icon-search{
+//	.size(22px, 20px);
+//	.sprite(0, 0);
+//}
+//.qa-icon-default-grid{
+//	.square(20px);
+//	.sprite(-44px, 0);
+//}
+//.qa-icon-interactive-grid{
+//	.square(20px);
+//	.sprite(-66px, 0);
+//}
+//.qa-icon-tree{
+//	.square(20px);
+//	.sprite(-88px, 0);
+//}
+//.qa-icon-export{
+//	.size(16px, 20px);
+//	.sprite(-22px, 0);
+//}
+//.qa-icon-reload{
+//	.square(20px);
+//	.sprite(-132px, 0);
+//}
+//.qa-icon-close{
+//	.square(12px);
+//	.sprite(-154px, 0);
+//}
+//.qa-icon-tree-expanded{
+//	.size(16px, 20px);
+//	.sprite(-110px, 0);
+//}
+//.qa-icon-tree-child-expanded{
+//	.size(14px, 20px);
+//	.sprite(-176px, 0);
+//}
+//.qa-icon-tree-child-expanded-selected{
+//	.size(14px, 20px);
+//	.sprite(-176px, -22px);
+//}
+//.qa-icon-tree-child{
+//	.size(16px, 20px);
+//	.sprite(-198px, 0);
+//}
+//.qa-icon-prev{
+//	.size(7px, 13px);
+//	.sprite(-220px, 0);
+//}
+//.qa-icon-next{
+//	.size(7px, 13px);
+//	.sprite(-242px, 0);
+//}
+//
+//.qa-icon-lock{
+//	.size(13px, 16px);
+//	.sprite(-264px, 0);
+//	&:hover{
+//		cursor: pointer;
+//		.sprite(-264px, -22px);
+//	}
+//}
+//
+//
+//.btn{
+//	&:hover{
+//		[class^="qa-icon-"], [class*="qa-icon-"]{
+// 			background-position-y: -22px;
+// 		}
+//		// .qa-icon-search{
+//		// 	.sprite(0, -22px);
+//		// }
+//	}
+//}

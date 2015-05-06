@@ -9,6 +9,14 @@ var CHANGE_EVENT = 'change';
 var width = {};
 var scroll = {};
 
+function togglePinColumn(gridId, fieldId) {
+    GridStrore.getHeader(gridId).forEach(function (cell) {
+        if (cell.fieldId == fieldId) {
+            cell.isPin = !cell.isPin;
+        }
+    });
+}
+
 function setScroll(gridId, type, scrollSize) {
     scroll[gridId] = scroll[gridId] || {};
     if (scrollSize < 0)
@@ -46,8 +54,22 @@ var StylesStore = assign({}, EventEmitter.prototype, {
         var fullWidth = this.getGridFullWidth(gridId);
         var scrollBarWidth = this.getGridWidth(gridId);
 
+        var fullScroll = (relative / (scrollBarWidth - holderWidth)) * (fullWidth - scrollBarWidth);
+        var scrollByColumns = 0;
+        var scrollableHeader = GridStrore.getHeader(gridId).filter(function (cell) {
+            return !cell.isPin;
+        });
 
-        return (relative / (scrollBarWidth - holderWidth)) * (fullWidth - scrollBarWidth);
+
+        for (var i = 0; i < scrollableHeader.length; i++) {
+            if (scrollByColumns + scrollableHeader[i].width > fullScroll) {
+                break;
+            }
+            scrollByColumns += scrollableHeader[i].width;
+        }
+
+
+        return scrollByColumns;
 
     },
     getGridClassName: function (gridId) {
@@ -56,11 +78,27 @@ var StylesStore = assign({}, EventEmitter.prototype, {
     getColumnClassName: function (filedId) {
         return StylesConstants.COLUMN_STYLE_PREFIX + filedId;
     },
-    getStyle: function (gridId, metadata) {
+    getStyle: function (gridId, header) {
         var gridClass = '.' + this.getGridClassName(gridId);
-        return metadata.map(function (cell) {
-            return gridClass + ' .' + this.getColumnClassName(cell.fieldId)
+        var left = this.getRealScrollLeft(gridId);
+        return header.map(function (cell) {
+            var styleRow = gridClass + ' .' + this.getColumnClassName(cell.fieldId)
                 + '{ min-width: ' + cell.width + 'px; width: ' + cell.width + 'px;}';
+
+            left += cell.width;
+            return styleRow;
+        }.bind(this)).join('');
+    },
+
+    getPinStyle: function (gridId) {
+        var gridClass = '.' + this.getGridClassName(gridId);
+        var left = this.getRealScrollLeft(gridId);
+        return this.getPinnedColumns(gridId).map(function (cell) {
+            var styleRow = gridClass + ' .' + this.getColumnClassName(cell.fieldId)
+                + '{ left:' + left + 'px; }';
+
+            left += cell.width;
+            return styleRow;
         }.bind(this)).join('');
     },
 
@@ -78,6 +116,12 @@ var StylesStore = assign({}, EventEmitter.prototype, {
     },
     getGridHeight: function (gridId) {
         return 600;
+    },
+    getPinnedColumns: function (gridId) {
+        var columns = GridStrore.getHeader(gridId);
+        return columns.filter(function (cell) {
+            return cell.isPin;
+        });
     },
 
     emitChange: function (gridId, event) {
@@ -102,11 +146,15 @@ var StylesStore = assign({}, EventEmitter.prototype, {
                 setScroll(action.gridId, 'left', action.scrollSize);
                 StylesStore.emitChange(action.gridId, StylesStore.EVENTS.SCROLL);
                 break;
+            case StylesConstants.PIN_COLUMN:
+                togglePinColumn(action.gridId, action.fieldId);
+                StylesStore.emitChange(action.gridId);
+                break;
 
         }
         return true;
     })
 });
 
-
+StylesStore.setMaxListeners(0);
 module.exports = StylesStore;

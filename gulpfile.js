@@ -16,6 +16,9 @@ gulp.task('browserify', function () {
 gulp.task('copy', function () {
     gulp.src('src/index.html')
         .pipe(gulp.dest('dist'));
+
+    gulp.src('src/i/*')
+        .pipe(gulp.dest('dist/i'));
 });
 
 gulp.task('less', function(){

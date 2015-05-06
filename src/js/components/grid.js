@@ -1,6 +1,6 @@
 var React = require('react'),
-    Header = require('./header'),
-    Body = require('./body'),
+    Header = require('./Header.react'),
+    Body = require('./Body.react'),
     HScroller = require('./HScroller.react'),
     $ = require('jquery'),
     StylesStore = require('../stores/StylesStore'),

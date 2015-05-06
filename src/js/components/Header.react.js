@@ -1,13 +1,15 @@
 var React = require('react'),
     $ = require('jquery'),
-    StylesStore = require('../stores/StylesStore'),
+    StylesActions = require('../actions/StylesActions'),
     HeaderActions = require('../actions/HeaderActions'),
     GridStore = require('../stores/GridStore'),
-    StylesStore = require('../stores/StylesStore');
+    StylesStore = require('../stores/StylesStore'),
+    HeaderCell = require('./HeaderCell.react');
 
 
 function getStateFromStore(gridId) {
     return {
+        pinnedColumns: StylesStore.getPinnedColumns(gridId),
         width: StylesStore.getGridWidth(gridId),
         fullWidth: StylesStore.getGridFullWidth(gridId)
     }
@@ -17,32 +19,19 @@ var Header = React.createClass({
     getInitialState: function () {
         return getStateFromStore();
     },
-    style: null,
-    setStyle: function () {
-        if (this.style == null) {
-            this.style = document.createElement('style');
-            document.head.appendChild(this.style);
-        }
-        var style = StylesStore.getStyle(this.props.gridId, this.props.header);
-        if (this.style.textContent !== undefined) {
-            this.style.textContent = style;
-        } else {
-            this.style.innerText = style;
-        }
-    },
 
-    _onPin: function (fieldId) {
-        HeaderActions.pinColumn(fieldId);
-    },
+
     node: null,
     componentDidMount: function () {
 
         this.node = this.getDOMNode();
         GridStore.addChangeListeners(this._onChange, this.props.gridId);
+        GridStore.addChangeListeners(this._onScroll, this.props.gridId);
         StylesStore.addChangeListeners(this._onChange, this.props.gridId);
         StylesStore.addChangeListeners(this._onScroll, this.props.gridId, StylesStore.EVENTS.SCROLL);
     },
     componentWillUnmount: function () {
+        GridStore.removeChangeListener(this._onScroll, this.props.gridId);
         GridStore.removeChangeListener(this._onChange, this.props.gridId);
         StylesStore.removeChangeListener(this._onChange, this.props.gridId);
         StylesStore.removeChangeListener(this._onScroll, this.props.gridId, StylesStore.EVENTS.SCROLL);
@@ -57,15 +46,22 @@ var Header = React.createClass({
         };
 
         var rowStyle = {
-            width: this.state.fullWidth
+            width: this.state.fullWidth,
+            paddingLeft: this.state.pinnedColumns.reduce(function (w, c) {
+                return w + c.width;
+            }, 0)
         };
 
         this.setStyle();
         var header = this.props.header.map(function (cell) {
-            var cellClass = 'qtable__cell ' + StylesStore.getColumnClassName(cell.fieldId);
+            var options = {
+                isPinned: this.state.pinnedColumns.indexOf(cell) != -1,
+                left: this.node.scrollLeft
+            };
+
             return (
-                <div onClick={this._onPin.bind(this, cell.fieldId)} className={cellClass}>{cell.label}</div>
-            )
+                <HeaderCell options={options} gridId={this.props.gridId} cell={cell} />
+            );
         }.bind(this));
         return (
             <div style={headerStyle} className="qtable__header">
@@ -75,7 +71,45 @@ var Header = React.createClass({
     _onChange: function () {
         this.setState(getStateFromStore(this.props.gridId));
     },
+
+    style: null,
+    setStyle: function () {
+        if (this.style == null) {
+            this.style = document.createElement('style');
+            document.head.appendChild(this.style);
+        }
+        var style = StylesStore.getStyle(this.props.gridId, this.props.header);
+        if (this.style.textContent !== undefined) {
+            this.style.textContent = style;
+        } else {
+            this.style.innerText = style;
+        }
+    },
+
+    prevStyle: null,
+    pinStyle: null,
+    pervScrollSize: 0,
+    setPinStyle: function () {
+        if (this.pinStyle == null) {
+            this.pinStyle = document.createElement('style');
+            document.head.appendChild(this.pinStyle);
+        }
+        var style = StylesStore.getPinStyle(this.props.gridId, this.props.header);
+
+        if (style == this.prevStyle) {
+            return;
+        }
+
+        this.prevStyle = style;
+
+        if (this.pinStyle.textContent !== undefined) {
+            this.pinStyle.textContent = style;
+        } else {
+            this.pinStyle.innerText = style;
+        }
+    },
     _onScroll: function () {
+        this.setPinStyle();
         this.node.scrollLeft = StylesStore.getRealScrollLeft(this.props.gridId);
     }
 });
