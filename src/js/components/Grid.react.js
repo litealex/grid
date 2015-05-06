@@ -5,7 +5,8 @@ var React = require('react'),
     $ = require('jquery'),
     StylesStore = require('../stores/StylesStore'),
     StylesActions = require('../actions/StylesActions'),
-    GridActions = require('../actions/GridActions');
+    GridActions = require('../actions/GridActions'),
+    VScroller = require('./VScroller.react');
 
 
 var Grid =
@@ -16,19 +17,12 @@ var Grid =
                 return ++this.id;
             }
         },
-        _resize: function(){
-            var $grid = $(this.getDOMNode());
-            var $parent = $grid.parent();
-
-            StylesActions.resize(this.gridId, $parent.width());
-        },
         componentDidMount: function () {
-
             $(window).on('resize', this._resize.bind(this));
             this._resize();
         },
 
-        componentWillReceiveProps: function(nextProps){
+        componentWillReceiveProps: function (nextProps) {
             GridActions.update(this.gridId, nextProps.header, nextProps.rows);
         },
         gridId: null,
@@ -38,11 +32,19 @@ var Grid =
         render: function () {
             var gridClass = 'qtable ' + StylesStore.getGridClassName(this.gridId);
             return (
-                <div className={gridClass}>
-                    <Header gridId={this.gridId} header={this.props.header} />
-                    <Body gridId={this.gridId} header={this.props.header} rows={this.props.rows}/>
-                    <HScroller gridId={this.gridId} />
+                <div className="qtable__wrapper">
+                    <VScroller gridId={this.gridId} />
+                    <div className={gridClass}>
+                        <Header gridId={this.gridId} header={this.props.header} />
+                        <Body gridId={this.gridId} header={this.props.header} rows={this.props.rows}/>
+                        <HScroller gridId={this.gridId} />
+                    </div>
                 </div>)
+        },
+        _resize: function () {
+            var $grid = $(this.getDOMNode());
+            var $parent = $grid.parent();
+            StylesActions.resize(this.gridId, $parent.width());
         }
     });
 

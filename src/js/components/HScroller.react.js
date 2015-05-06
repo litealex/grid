@@ -1,14 +1,12 @@
 var React = require('react'),
-    GridStore = require('../stores/GridStore'),
-    $ = require('jquery'),
     StylesActions = require('../actions/StylesActions'),
-    StylesStore = require('../stores/StylesStore');
+    StylesStore = require('../stores/StylesStore'),
     GridStore = require('../stores/GridStore');
 
 function getStateFromStore(gridId) {
     return {
         left: StylesStore.getScrollLeft(gridId),
-        width: StylesStore.getGridWidth(gridId),
+        width: StylesStore.getScrollWidth(gridId),
         holderWidth: StylesStore.getHolderWidth(gridId)
     };
 }
@@ -22,7 +20,7 @@ var HScroller = React.createClass({
         var self = this;
         GridStore.addChangeListeners(this._onChange, this.props.gridId);
         StylesStore.addChangeListeners(this._onChange, this.props.gridId);
-        StylesStore.addChangeListeners(function(){
+        StylesStore.addChangeListeners(function () {
             self.setState({left: StylesStore.getScrollLeft(self.props.gridId)});
         }, this.props.gridId, StylesStore.EVENTS.SCROLL)
     },

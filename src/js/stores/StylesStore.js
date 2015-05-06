@@ -32,18 +32,19 @@ var StylesStore = assign({}, EventEmitter.prototype, {
 
     getHolderWidth: function (gridId) {
         var fullW = this.getGridFullWidth(gridId);
-        var gridWidth = this.getGridWidth(gridId);
+        var barWidth = this.getScrollWidth(gridId);
 
-        var p = gridWidth / fullW;
+        var p = barWidth / fullW;
 
-        return p * gridWidth;
+        return p * barWidth;
     },
     getScrollLeft: function (gridId) {
         scroll[gridId] = scroll[gridId] || {};
         var holderWidth = this.getHolderWidth(gridId);
         var left = scroll[gridId].left || 0;
-        if (left + holderWidth > width[gridId]) {
-            left = width[gridId] - holderWidth;
+        var barWidth = this.getScrollWidth(gridId);
+        if (left + holderWidth > barWidth) {
+            left = barWidth - holderWidth;
         }
 
         return left;
@@ -52,14 +53,19 @@ var StylesStore = assign({}, EventEmitter.prototype, {
         var relative = this.getScrollLeft(gridId);
         var holderWidth = this.getHolderWidth(gridId);
         var fullWidth = this.getGridFullWidth(gridId);
-        var scrollBarWidth = this.getGridWidth(gridId);
+        var scrollBarWidth = this.getScrollWidth(gridId);
 
-        var fullScroll = (relative / (scrollBarWidth - holderWidth)) * (fullWidth - scrollBarWidth);
+        var maxScroll = fullWidth - this.getGridWidth(gridId);
+
+        // на сколько реально просколелно
+        var fullScroll = (relative / (scrollBarWidth - holderWidth)) * maxScroll;
         var scrollByColumns = 0;
         var scrollableHeader = GridStrore.getHeader(gridId).filter(function (cell) {
             return !cell.isPin;
         });
 
+        if (fullScroll == maxScroll)
+            return maxScroll;
 
         for (var i = 0; i < scrollableHeader.length; i++) {
             if (scrollByColumns + scrollableHeader[i].width > fullScroll) {
@@ -68,7 +74,7 @@ var StylesStore = assign({}, EventEmitter.prototype, {
             scrollByColumns += scrollableHeader[i].width;
         }
 
-
+        console.log(scrollByColumns);
         return scrollByColumns;
 
     },
@@ -93,6 +99,7 @@ var StylesStore = assign({}, EventEmitter.prototype, {
     getPinStyle: function (gridId) {
         var gridClass = '.' + this.getGridClassName(gridId);
         var left = this.getRealScrollLeft(gridId);
+
         return this.getPinnedColumns(gridId).map(function (cell) {
             var styleRow = gridClass + ' .' + this.getColumnClassName(cell.fieldId)
                 + '{ left:' + left + 'px; }';
@@ -104,7 +111,7 @@ var StylesStore = assign({}, EventEmitter.prototype, {
 
     /** ширина видимой части таблицы */
     getGridWidth: function (gridId) {
-        return width[gridId] || 0;
+        return (width[gridId] || 0) - 20;
     },
 
     /** ширина всей таблицы, включая невидимую часть */
@@ -124,6 +131,16 @@ var StylesStore = assign({}, EventEmitter.prototype, {
         });
     },
 
+
+    getScrollWidth: function (gridId) {
+        var pinnedWidth = this.getPinnedColumns(gridId)
+            .reduce(function (w, c) {
+                return w + c.width;
+            }, 0);
+
+
+        return this.getGridWidth(gridId) - pinnedWidth;
+    },
     emitChange: function (gridId, event) {
         event = event || '';
         this.emit(CHANGE_EVENT + gridId + event);

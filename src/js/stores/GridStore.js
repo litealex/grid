@@ -17,6 +17,10 @@ var GridStore = assign({}, EventEmitter.prototype, {
         var data = _data[gridId];
         return data ? data.header : [];
     },
+    getRows: function(gridId){
+        var data = _data[gridId];
+        return data ? data.rows.slice(0,50) : [];
+    },
     emitChange: function () {
         this.emit(CHANGE_EVENT);
     },

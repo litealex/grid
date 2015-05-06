@@ -1,6 +1,6 @@
 var React = require('react'),
-    TopRow = require('./toprow'),
-    LastRow = require('./lastrow'),
+    TopRow = require('./TopRow.react'),
+    LastRow = require('./LastRow.react'),
     Row = require('./Row.react'),
     StylesStore = require('../stores/StylesStore'),
     GridStore = require('../stores/GridStore'),
@@ -12,7 +12,9 @@ function getStateFromStore(gridId) {
         pinnedColumns: StylesStore.getPinnedColumns(gridId),
         width: StylesStore.getGridWidth(gridId),
         height: StylesStore.getGridHeight(gridId),
-        fullWidth: StylesStore.getGridFullWidth(gridId)
+        fullWidth: StylesStore.getGridFullWidth(gridId),
+        rows: GridStore.getRows(gridId),
+        header: GridStore.getHeader(gridId)
     };
 }
 
@@ -44,15 +46,12 @@ var Body = React.createClass({
                 return w + c.width;
             }, 0);
 
-        if (this.props.rows.length > 100) {
-            renderRows = this.props.rows.slice(0, 50);
-        } else {
-            renderRows = this.props.rows;
-        }
+        renderRows = this.state.rows;
+
 
         rows = renderRows.map(function (row) {
-            var options = {paddingLeft:paddingLeft, width: this.state.fullWidth};
-            return (<Row options={options} gridId={this.props.gridId} metadata={this.props.header} cells={row} />)
+            var options = {paddingLeft: paddingLeft, width: this.state.fullWidth};
+            return (<Row options={options} gridId={this.props.gridId} metadata={this.state.header} cells={row} />)
         }.bind(this));
 
 

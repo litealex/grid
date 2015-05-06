@@ -70,6 +70,7 @@ var Header = React.createClass({
     },
     _onChange: function () {
         this.setState(getStateFromStore(this.props.gridId));
+        this.setPinStyle();
     },
 
     style: null,

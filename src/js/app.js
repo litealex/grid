@@ -1,4 +1,4 @@
-var Grid = require('./components/grid'),
+var Grid = require('./components/Grid.react'),
     React = require('react'),
     $ = require('jquery'),
     GridStore = require('./actions/GridActions')

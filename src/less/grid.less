@@ -1,7 +1,10 @@
 @import "variables.less";
 .qtable {
-  display: table;
+  &__wrapper {
+    position: relative;
+  }
 
+  display: table;
   &__row {
     position: relative;
 
@@ -15,6 +18,7 @@
 
   &__body {
     overflow: hidden;
+    overflow-y: auto;
   }
 
   &__cell {
