@@ -1,7 +1,6 @@
 var React = require('react'),
     StylesActions = require('../actions/StylesActions'),
-    StylesStore = require('../stores/StylesStore'),
-    GridStore = require('../stores/GridStore');
+    StylesStore = require('../stores/StylesStore');
 
 
 var VScroller = React.createClass({

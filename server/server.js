@@ -8,16 +8,16 @@ app.get('/data', function (req, res) {
     for (i = 0; i < 20; i++) {
         header.push({
             fieldId: 'field' + i,
-            label: 'Поле №' + (i + 1) + (i==4? '<br>1':''),
+            label: 'Поле №' + (i + 1) + (i==0? '<br>1':''),
             width: 200,
-            isPin: i < 2
+            isPin: i == 0
         });
     }
 
     for (i = 0; i < 1000; i++) {
         row = {};
-        header.forEach(function (cell) {
-            row[cell.fieldId] = i;
+        header.forEach(function (cell, index) {
+            row[cell.fieldId] = i + (index||'<br>3');
         });
         rows.push(row);
     }

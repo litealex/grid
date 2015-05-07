@@ -1,16 +1,23 @@
 var StylesConstants = require('../constants/StylesConstants');
+var GridConstants = require('../constants/GridConstants');
 var GridDispatcher = require('../dispatcher/GridDispatcher');
 var EventEmitter = require('events').EventEmitter;
 var assign = require('object-assign');
-var GridStrore = require('./GridStore');
 
 
 var CHANGE_EVENT = 'change';
 var width = {};
 var scroll = {};
+var _data = {};
+var rows = {};
+var timers = {};
+
+function update(gridId, data) {
+    _data[gridId] = data;
+}
 
 function togglePinColumn(gridId, fieldId) {
-    GridStrore.getHeader(gridId).forEach(function (cell) {
+    StylesStore.getHeader(gridId).forEach(function (cell) {
         if (cell.fieldId == fieldId) {
             cell.isPin = !cell.isPin;
         }
@@ -24,11 +31,61 @@ function setScroll(gridId, type, scrollSize) {
     scroll[gridId][type] = scrollSize;
 }
 
+function setRowCellHeight(gridId, rowId, fieldId, height) {
+    var cell = {fieldId: fieldId, height: height};
+    rows[gridId] = rows[gridId] || {};
+    var grid = rows[gridId];
+
+    grid[rowId] = grid[rowId] || [];
+    var row = grid[rowId];
+    var index = -1;
+    for (var i = 0; i < row.length; i++) {
+        if (row[i].fieldId == fieldId) {
+            index = i;
+            break;
+        }
+    }
+    if (index == -1)
+        row.push(cell);
+    else
+        row[index] = cell;
+
+}
 
 var StylesStore = assign({}, EventEmitter.prototype, {
     EVENTS: {
-        SCROLL: 'SCROLL'
+        SCROLL: 'SCROLL',
+        CELL_UPDATE: 'CELL_UPDATE'
     },
+
+    getHeader: function (gridId) {
+        var data = _data[gridId];
+        return data ? data.header : [];
+    },
+    getRows: function (gridId) {
+        //var scrollSize = StyleStore.getScrollTop(gridId);
+        //console.log(scrollSize);
+        var data = _data[gridId];
+        return data ? data.rows.slice(0, 50) : [];
+    },
+
+    getRowHeight: function (gridId, rowId) {
+
+        var row = (rows[gridId] || {})[rowId];
+
+        var max = -1;
+        if (row) {
+            row.forEach(function (cell) {
+                if (cell.height > max) {
+                    max = cell.height
+                }
+            });
+
+        }
+
+        return max == -1 ? null : max;
+    },
+
 
     getHolderWidth: function (gridId) {
         var fullW = this.getGridFullWidth(gridId);
@@ -37,6 +94,11 @@ var StylesStore = assign({}, EventEmitter.prototype, {
         var p = barWidth / fullW;
 
         return p * barWidth;
+    },
+    getScrollTop: function (gridId) {
+        var gridScroll = scroll[gridId];
+
+        return gridScroll ? (gridScroll.top || 0) : 0;
     },
     getScrollLeft: function (gridId) {
         scroll[gridId] = scroll[gridId] || {};
@@ -60,7 +122,7 @@ var StylesStore = assign({}, EventEmitter.prototype, {
         // на сколько реально просколелно
         var fullScroll = (relative / (scrollBarWidth - holderWidth)) * maxScroll;
         var scrollByColumns = 0;
-        var scrollableHeader = GridStrore.getHeader(gridId).filter(function (cell) {
+        var scrollableHeader = this.getHeader(gridId).filter(function (cell) {
             return !cell.isPin;
         });
 
@@ -73,10 +135,7 @@ var StylesStore = assign({}, EventEmitter.prototype, {
             }
             scrollByColumns += scrollableHeader[i].width;
         }
-
-        console.log(scrollByColumns);
         return scrollByColumns;
-
     },
     getGridClassName: function (gridId) {
         return StylesConstants.GRID_STYLE_PREFIX + gridId;
@@ -116,7 +175,7 @@ var StylesStore = assign({}, EventEmitter.prototype, {
 
     /** ширина всей таблицы, включая невидимую часть */
     getGridFullWidth: function (gridId) {
-        return GridStrore.getHeader(gridId).reduce(function (w, h2) {
+        return this.getHeader(gridId).reduce(function (w, h2) {
             return w + h2.width;
         }, 0);
 
@@ -125,7 +184,7 @@ var StylesStore = assign({}, EventEmitter.prototype, {
         return 600;
     },
     getPinnedColumns: function (gridId) {
-        var columns = GridStrore.getHeader(gridId);
+        var columns = this.getHeader(gridId);
         return columns.filter(function (cell) {
             return cell.isPin;
         });
@@ -145,6 +204,14 @@ var StylesStore = assign({}, EventEmitter.prototype, {
         event = event || '';
         this.emit(CHANGE_EVENT + gridId + event);
     },
+    reduceEmitChange: function (gridId, event) {
+        var key = gridId + event;
+        if (timers[key] != null)
+            clearTimeout(timers[key]);
+        timers[key] = setTimeout(function () {
+            StylesStore.emitChange(gridId, event);
+        }, 15);
+    },
     addChangeListeners: function (callback, gridId, event) {
         event = event || '';
         this.on(CHANGE_EVENT + gridId + event, callback);
@@ -152,6 +219,7 @@ var StylesStore = assign({}, EventEmitter.prototype, {
     removeChangeListener: function (callback, gridId) {
         this.removeListener(CHANGE_EVENT + gridId, callback);
     },
+
     dispatcherIndex: GridDispatcher.register(function (payload) {
         var action = payload.action;
         switch (action.actionType) {
@@ -163,9 +231,23 @@ var StylesStore = assign({}, EventEmitter.prototype, {
                 setScroll(action.gridId, 'left', action.scrollSize);
                 StylesStore.emitChange(action.gridId, StylesStore.EVENTS.SCROLL);
                 break;
+            case StylesConstants.V_SCROLL:
+                setScroll(action.gridId, 'top', action.scrollSize);
+                StylesStore.emitChange(action.gridId);
+                break;
             case StylesConstants.PIN_COLUMN:
                 togglePinColumn(action.gridId, action.fieldId);
                 StylesStore.emitChange(action.gridId);
+                break;
+
+            case GridConstants.UPDATE_DATA:
+                update(action.gridId, {rows: action.rows, header: action.header});
+                StylesStore.emitChange(action.gridId);
+                break;
+
+            case StylesConstants.UPDATE_ROW_HEIGHT:
+                setRowCellHeight(action.gridId, action.rowId, action.fieldId, action.height);
+                StylesStore.reduceEmitChange(action.gridId, StylesStore.EVENTS.CELL_UPDATE);
                 break;
 
         }

@@ -17,11 +17,27 @@ var StylesActions = {
             scrollSize: scrollSize
         });
     },
+    vScroll: function (gridId, scrollSize) {
+        GridDispatcher.handleViewAction({
+            actionType: StylesConstants.V_SCROLL,
+            gridId: gridId,
+            scrollSize: scrollSize
+        });
+    },
     pinColumn: function (gridId, fieldId) {
         GridDispatcher.handleViewAction({
             actionType: StylesConstants.PIN_COLUMN,
             gridId: gridId,
             fieldId: fieldId
+        });
+    },
+    updateRowCellHeight: function (gridId, rowId, fieldId, height) {
+        GridDispatcher.handleViewAction({
+            actionType: StylesConstants.UPDATE_ROW_HEIGHT,
+            gridId: gridId,
+            rowId: rowId,
+            fieldId: fieldId,
+            height: height
         });
     }
 };

@@ -10,19 +10,18 @@ var HeaderCell = React.createClass({
         StylesActions.pinColumn(this.props.gridId, fieldId);
     },
     componentDidMount: function () {
-        // StylesStore.addChangeListeners(this._onScroll, this.props.gridId, StylesStore.EVENTS.SCROLL);
-    },
-    //componentWillReceiveProps: function (props) {
-    //    if (props.options.isPinned) {
-    //        this.node = this.getDOMNode();
-    //        StylesStore.addChangeListeners(this._onScroll, this.props.gridId, StylesStore.EVENTS.SCROLL);
-    //    }
-    //    else {
-    //        this.node = null;
-    //        StylesStore.removeChangeListener(this._onScroll, this.props.gridId, StylesStore.EVENTS.SCROLL);
-    //    }
-    //},
+        var p = this.props;
+        var node  = this.getDOMNode();
+        this.nodeStyle = node.style;
 
+        this.content = node.querySelector('.qtable__cell__content');
+        StylesStore.addChangeListeners(this._onChange, p.gridId, StylesStore.EVENTS.CELL_UPDATE);
+        StylesActions.updateRowCellHeight(p.gridId, p.rowId, p.cell.fieldId, this.content.offsetHeight);
+    },
+    componentDidUpdate: function () {
+        var p = this.props;
+        StylesActions.updateRowCellHeight(p.gridId, p.rowId, p.cell.fieldId, this.content.offsetHeight);
+    },
     render: function () {
         var style = {left: this.state.left};
         var cell = this.props.cell;
@@ -31,20 +30,18 @@ var HeaderCell = React.createClass({
             cellClass += ' qtable__cell--pin';
         }
 
-
         return (
             <div onClick={this._onPin.bind(this, cell.fieldId)} className={cellClass}>
-                <span dangerouslySetInnerHTML={{__html: cell.label}}></span>
+                <div className="qtable__cell__content"  dangerouslySetInnerHTML={{__html: cell.label}}></div>
             </div>
         )
     },
-    node: null,
-    _onScroll: function () {
-        //this.node.style.left = StylesStore.getRealScrollLeft(this.props.gridId) + 'px';
-        //this.setState({
-        //    left: StylesStore.getRealScrollLeft(this.props.gridId)
-        //});
+    nodeStyle: null,
+    content: null,
+    _onChange: function () {
+        this.nodeStyle.height = StylesStore.getRowHeight(this.props.gridId, this.props.rowId) + 'px';
     }
+
 });
 
 

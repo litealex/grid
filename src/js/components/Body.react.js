@@ -3,7 +3,6 @@ var React = require('react'),
     LastRow = require('./LastRow.react'),
     Row = require('./Row.react'),
     StylesStore = require('../stores/StylesStore'),
-    GridStore = require('../stores/GridStore'),
     StylesActions = require('../actions/StylesActions');
 
 
@@ -13,8 +12,8 @@ function getStateFromStore(gridId) {
         width: StylesStore.getGridWidth(gridId),
         height: StylesStore.getGridHeight(gridId),
         fullWidth: StylesStore.getGridFullWidth(gridId),
-        rows: GridStore.getRows(gridId),
-        header: GridStore.getHeader(gridId)
+        rows: StylesStore.getRows(gridId),
+        header: StylesStore.getHeader(gridId)
     };
 }
 
@@ -25,12 +24,13 @@ var Body = React.createClass({
     },
     componentDidMount: function () {
         this.node = this.getDOMNode();
-        GridStore.addChangeListeners(this._onChange, this.props.gridId);
+
+        this.node.addEventListener('scroll', this._scrollHandler);
+
         StylesStore.addChangeListeners(this._onChange, this.props.gridId);
         StylesStore.addChangeListeners(this._onScroll, this.props.gridId, StylesStore.EVENTS.SCROLL);
     },
     componentWillUnmount: function () {
-        GridStore.removeChangeListener(this._onChange, this.props.gridId);
         StylesStore.removeChangeListener(this._onChange, this.props.gridId);
         StylesStore.removeChangeListener(this._onScroll, this.props.gridId, StylesStore.EVENTS.SCROLL);
     },
@@ -47,7 +47,6 @@ var Body = React.createClass({
             }, 0);
 
         renderRows = this.state.rows;
-
 
         rows = renderRows.map(function (row) {
             var options = {paddingLeft: paddingLeft, width: this.state.fullWidth};
@@ -68,8 +67,10 @@ var Body = React.createClass({
     },
     _onScroll: function () {
         this.node.scrollLeft = StylesStore.getRealScrollLeft(this.props.gridId);
+    },
+    _scrollHandler: function(e){
+        StylesActions.vScroll(e.target.scrollTop);
     }
-
 });
 
 module.exports = Body;

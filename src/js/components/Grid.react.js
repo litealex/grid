@@ -35,7 +35,7 @@ var Grid =
                 <div className="qtable__wrapper">
                     <VScroller gridId={this.gridId} />
                     <div className={gridClass}>
-                        <Header gridId={this.gridId} header={this.props.header} />
+                        <Header gridId={this.gridId} />
                         <Body gridId={this.gridId} header={this.props.header} rows={this.props.rows}/>
                         <HScroller gridId={this.gridId} />
                     </div>

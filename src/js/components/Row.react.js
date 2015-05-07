@@ -1,6 +1,6 @@
 var React = require('react'),
-    StylesStore = require('../stores/StylesStore'),
-    GridStore = require('../stores/GridStore');
+    Cell = require('./Cell.react'),
+    StylesStore = require('../stores/StylesStore');
 
 
 function getStateFromStore(gridId) {
@@ -10,35 +10,51 @@ function getStateFromStore(gridId) {
 }
 
 var Row = React.createClass({
+    statics: {
+        id: 0,
+        getNextId: function () {
+            return ++this.id;
+        }
+    },
     getInitialState: function () {
         return getStateFromStore(this.props.gridId);
     },
     componentDidMount: function () {
-
+        this.rowId = Row.getNextId();
         StylesStore.addChangeListeners(this._onChange, this.props.gridId);
-        //StylesStore.addChangeListeners(this._onScroll, this.props.gridId, StylesStore.EVENTS.SCROLL);
+        StylesStore.addChangeListeners(this._onCellUpdate, this.props.gridId, StylesStore.EVENTS.CELL_UPDATE);
     },
     componentWillUnmount: function () {
         StylesStore.removeChangeListener(this._onChange, this.props.gridId);
-        //StylesStore.removeChangeListener(this._onScroll, this.props.gridId, StylesStore.EVENTS.SCROLL);
+        //todo: remove this.rowId from StylesStrore
     },
 
 
     render: function () {
-        var pinnedColumns = this.state.pinnedColumns;
+        var options = {pinnedColumns: this.state.pinnedColumns};
+        this.props.width = this.state.rowHeight;
+
+
 
         var cells = this.props.metadata.map(function (cellMeta) {
-            var cellClass = 'qtable__cell ' + StylesStore.getColumnClassName(cellMeta.fieldId);
-            if (pinnedColumns.indexOf(cellMeta) != -1) {
-                cellClass += ' qtable__cell--pin';
-            }
-
-            return <div className={cellClass}>{this.props.cells[cellMeta.fieldId]}</div>
+            return <Cell gridId={this.props.gridId} rowId={this.rowId} options={options} cellMeta={cellMeta} cell={this.props.cells[cellMeta.fieldId]} />;
         }.bind(this));
+
+
         return (<div style={this.props.options} className="qtable__row">{cells}</div>);
     },
+    rowId: null,
     _onChange: function () {
         this.setState(getStateFromStore(this.props.gridId));
+    },
+    _onCellUpdate: function () {
+        var newRowHeight = StylesStore.getRowHeight(this.props.gridId, this.rowId);
+
+        if (this.state.rowHeight != newRowHeight) {
+            this.setState({
+                rowHeight: newRowHeight
+            });
+        }
     }
 });
 
