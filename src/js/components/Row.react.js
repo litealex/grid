@@ -6,7 +6,8 @@ var React = require('react'),
 
 function getStateFromStore(gridId) {
     return {
-        pinnedColumns: StylesStore.getPinnedColumns(gridId)
+        pinnedColumns: StylesStore.getPinnedColumns(gridId),
+
     }
 }
 
@@ -26,11 +27,9 @@ var Row = React.createClass({
     componentDidMount: function () {
 
         StylesStore.addChangeListeners(this._onChange, this.props.gridId);
-        StylesStore.addChangeListeners(this._onCellUpdate, this.props.gridId, StylesStore.EVENTS.CELL_UPDATE);
     },
     componentWillUnmount: function () {
         StylesStore.removeChangeListener(this._onChange, this.props.gridId);
-        StylesStore.removeChangeListener(this._onCellUpdate, this.props.gridId, StylesStore.EVENTS.CELL_UPDATE);
         StylesActions.removeRow(this.props.gridId, this.rowId);
     },
 
@@ -50,15 +49,7 @@ var Row = React.createClass({
     _onChange: function () {
         this.setState(getStateFromStore(this.props.gridId));
     },
-    _onCellUpdate: function () {
-        var newRowHeight = StylesStore.getRowHeight(this.props.gridId, this.rowId);
 
-        if (this.state.rowHeight != newRowHeight) {
-            this.setState({
-                rowHeight: newRowHeight
-            });
-        }
-    }
 });
 
 module.exports = Row;

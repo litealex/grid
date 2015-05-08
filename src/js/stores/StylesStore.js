@@ -11,8 +11,10 @@ var scroll = {};
 var _data = {};
 var rows = {};
 var timers = {};
-var topRow = {};
-
+var topRow = 0;
+var lastRow = 0;
+var startIndex = 0;
+var prevScroll = 0;
 
 function removeRow(gridId, rowId) {
     delete rows[gridId][rowId];
@@ -66,48 +68,72 @@ var StylesStore = assign({}, EventEmitter.prototype, {
     },
 
     getTopRowHeight: function (gridId) {
-        return topRow[gridId] || 0;
+        var scrollSize = this.getScrollTop(gridId);
+        var si = (Math.floor(scrollSize / 36) - 17);
+        if (si < 0)
+            si = 0;
+        return si * 36;
     },
-    loaded: 50,
+    getLastRowHeight: function (gridId) {
+        var data = _data[gridId];
+        if (!data) return 0;
+        var topRowH = this.getTopRowHeight(gridId);
+        var fullH = data.rows.length * 36;
+        var res = fullH - topRowH - 36 * 17 * 3;
+        if (res < 0)
+            res = 0;
+        return res;
+    },
+    rowHeight: 36,
+    test: function (gridId) {
+        var data = _data[gridId];
+        var scrollSize = this.getScrollTop(gridId);
+        startIndex = Math.floor(scrollSize / 36) - 17;
+        if (startIndex < 0)
+            startIndex = 0;
+        if (data) {
+            lastRow = (data.rows.length - (startIndex + 17 * 3)) * 36;
+        }
+        var result = data ? data.rows.slice(startIndex, startIndex + 60) : [];
+        result.startIndex = startIndex;
+        return result;
+
+    },
+
     getHeader: function (gridId) {
         var data = _data[gridId];
         return data ? data.header : [];
     },
     getRows: function (gridId) {
-        var scrollSize = this.getScrollTop(gridId);
+        return this.test(gridId);
+        console.log('data');
+        var totalHeight = 1800;
+        var scrollSize = this.getScrollTop(gridId) - 600;
         var data = _data[gridId];
-        var _rows = rows[gridId];
-        if (_rows) {
-            var totalHeight = 0;
-            for (var i in _rows) {
-                if (isNaN(i)) continue;
-                totalHeight += this._getRowHeight(_rows[i]);
-            }
-            if (totalHeight - scrollSize < 800) {
-                topRow[gridId] = scrollSize;
-                if (data.rows.length > this.loaded)
-                    this.loaded += 25
+
+        if (data) {
+
+            if (prevScroll < scrollSize) {
+                if (scrollSize - topRow > 40 * 36)
+                    startIndex = Math.floor(scrollSize / 36)
+            } else {
+                if (scrollSize - topRow < 20 * 36)
+                    startIndex = Math.floor(scrollSize / 36) - 20;
             }
 
+            topRow = startIndex * 36;
+            lastRow = (data.rows.length - (startIndex + 60)) * 36;
+            console.log(lastRow);
         }
+        prevScroll = scrollSize;
 
-
-        var result = data ? data.rows.slice(0, this.loaded) : [];
-        result.startIndex = this.loaded;
+        var result = data ? data.rows.slice(startIndex, startIndex + 60) : [];
+        result.startIndex = startIndex;
         return result;
     },
 
-    getRowHeight: function (gridId, rowId) {
-        var row = (rows[gridId] || {})[rowId];
-        var max = -1;
-        if (row) {
-            row.forEach(function (cell) {
-                if (cell.height > max) {
-                    max = cell.height
-                }
-            });
-        }
-        return max == -1 ? null : max;
+    getRowHeight: function (gridId) {
+        return this.rowHeight;
     },
 
     _getRowHeight: function (row) {

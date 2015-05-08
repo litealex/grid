@@ -12,16 +12,12 @@ var Cell = React.createClass({
         var node = this.getDOMNode();
         this.nodeStyle = node.style;
         this.content = node.querySelector('.qtable__cell__content');
-        StylesStore.addChangeListeners(this._onChange, p.gridId, StylesStore.EVENTS.CELL_UPDATE);
-        StylesActions.updateRowCellHeight(p.gridId, p.rowId, p.cellMeta.fieldId, this.content.offsetHeight);
     },
     componentWillUnmount: function () {
         var p = this.props;
-        StylesStore.reduceEmitChange(this._onChange, p.gridId, StylesStore.EVENTS.CELL_UPDATE);
     },
     componentDidUpdate: function () {
         var p = this.props;
-        StylesActions.updateRowCellHeight(p.gridId, p.rowId, p.cellMeta.fieldId, this.content.offsetHeight);
     },
     render: function () {
         var cellMeta = this.props.cellMeta;
@@ -34,7 +30,7 @@ var Cell = React.createClass({
         }
 
         return (
-            <div className={cellClass}>
+            <div style={{height:36}} className={cellClass}>
                 <div className="qtable__cell__content"  dangerouslySetInnerHTML={{__html: this.props.cell}}></div>
             </div>
         );

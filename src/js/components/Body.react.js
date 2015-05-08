@@ -11,6 +11,7 @@ function getStateFromStore(gridId) {
         pinnedColumns: StylesStore.getPinnedColumns(gridId),
         width: StylesStore.getGridWidth(gridId),
         height: StylesStore.getGridHeight(gridId),
+        rowHeight: StylesStore.getRowHeight(gridId),
         fullWidth: StylesStore.getGridFullWidth(gridId),
         rows: StylesStore.getRows(gridId),
         header: StylesStore.getHeader(gridId)
@@ -52,13 +53,19 @@ var Body = React.createClass({
 
 
         rows = renderRows.map(function (row) {
-            var options = {paddingLeft: paddingLeft, width: this.state.fullWidth};
+            var options = {
+                paddingLeft: paddingLeft,
+                width: this.state.fullWidth,
+                height: this.state.rowHeight
+            };
             return (<Row options={options} gridId={this.props.gridId} metadata={this.state.header} cells={row} />)
         }.bind(this));
 
         return (
             <div style={style} className="qtable__body">
+                <TopRow gridId={this.props.gridId}/>
             {rows}
+                <LastRow gridId={this.props.gridId}/>
             </div>);
     },
     node: null,
@@ -82,6 +89,7 @@ var Body = React.createClass({
 
     },
     _scrollHandler: function (e) {
+
         StylesActions.vScroll(this.props.gridId, e.target.scrollTop);
     }
 });

@@ -9,7 +9,7 @@ var Grid = require('./components/Grid.react'),
                 rows: []
             };
         },
-        componentDidMount: function(){
+        componentDidMount: function(s){
             $.ajax({
                 url: '/data'
             }).success(function(data){
@@ -28,5 +28,5 @@ var Grid = require('./components/Grid.react'),
 
 React.render(<App />, document.getElementById('main'));
 
-React.render(<App />, document.getElementById('main2'));
+//React.render(<App />, document.getElementById('main2'));
 

@@ -19,11 +19,12 @@ var TopRow = React.createClass({
         StylesStore.removeChangeListener(this._onChange, this.props.gridId, StylesStore.EVENTS.V_SCROLL);
     },
     render: function () {
+
         return (<div style={this.state} className="qtable__row qtable__row--top"></div>);
     },
 
     _onChange: function () {
-        return getStateFromStore(this.props.gridId);
+        this.setState(getStateFromStore(this.props.gridId));
     }
 });
 
