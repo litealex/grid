@@ -1,5 +1,6 @@
 var React = require('react'),
     Cell = require('./Cell.react'),
+    StylesActions = require('../actions/StylesActions'),
     StylesStore = require('../stores/StylesStore');
 
 
@@ -16,25 +17,27 @@ var Row = React.createClass({
             return ++this.id;
         }
     },
+    componentWillMount: function(){
+        this.rowId = Row.getNextId();
+    },
     getInitialState: function () {
         return getStateFromStore(this.props.gridId);
     },
     componentDidMount: function () {
-        this.rowId = Row.getNextId();
+
         StylesStore.addChangeListeners(this._onChange, this.props.gridId);
         StylesStore.addChangeListeners(this._onCellUpdate, this.props.gridId, StylesStore.EVENTS.CELL_UPDATE);
     },
     componentWillUnmount: function () {
         StylesStore.removeChangeListener(this._onChange, this.props.gridId);
-        //todo: remove this.rowId from StylesStrore
+        StylesStore.removeChangeListener(this._onCellUpdate, this.props.gridId, StylesStore.EVENTS.CELL_UPDATE);
+        StylesActions.removeRow(this.props.gridId, this.rowId);
     },
 
 
     render: function () {
         var options = {pinnedColumns: this.state.pinnedColumns};
         this.props.width = this.state.rowHeight;
-
-
 
         var cells = this.props.metadata.map(function (cellMeta) {
             return <Cell gridId={this.props.gridId} rowId={this.rowId} options={options} cellMeta={cellMeta} cell={this.props.cells[cellMeta.fieldId]} />;

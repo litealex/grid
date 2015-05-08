@@ -22,6 +22,7 @@ var Grid =
             this._resize();
         },
 
+
         componentWillReceiveProps: function (nextProps) {
             GridActions.update(this.gridId, nextProps.header, nextProps.rows);
         },
@@ -33,10 +34,10 @@ var Grid =
             var gridClass = 'qtable ' + StylesStore.getGridClassName(this.gridId);
             return (
                 <div className="qtable__wrapper">
-                    <VScroller gridId={this.gridId} />
+
                     <div className={gridClass}>
                         <Header gridId={this.gridId} />
-                        <Body gridId={this.gridId} header={this.props.header} rows={this.props.rows}/>
+                        <Body gridId={this.gridId} />
                         <HScroller gridId={this.gridId} />
                     </div>
                 </div>)
@@ -45,7 +46,7 @@ var Grid =
             var $grid = $(this.getDOMNode());
             var $parent = $grid.parent();
             StylesActions.resize(this.gridId, $parent.width());
-        }
+        },
     });
 
 

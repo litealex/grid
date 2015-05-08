@@ -7,13 +7,17 @@ var Cell = React.createClass({
     getInitialState: function () {
         return {};
     },
-    componentDidMount: function(){
+    componentDidMount: function () {
         var p = this.props;
-        var node  = this.getDOMNode();
+        var node = this.getDOMNode();
         this.nodeStyle = node.style;
         this.content = node.querySelector('.qtable__cell__content');
         StylesStore.addChangeListeners(this._onChange, p.gridId, StylesStore.EVENTS.CELL_UPDATE);
         StylesActions.updateRowCellHeight(p.gridId, p.rowId, p.cellMeta.fieldId, this.content.offsetHeight);
+    },
+    componentWillUnmount: function () {
+        var p = this.props;
+        StylesStore.reduceEmitChange(this._onChange, p.gridId, StylesStore.EVENTS.CELL_UPDATE);
     },
     componentDidUpdate: function () {
         var p = this.props;

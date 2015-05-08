@@ -39,6 +39,13 @@ var StylesActions = {
             fieldId: fieldId,
             height: height
         });
+    },
+    removeRow: function(gridId, rowId){
+        GridDispatcher.handleViewAction({
+            actionType: StylesConstants.REMOVE_ROW,
+            gridId: gridId,
+            rowId: rowId
+        });
     }
 };
 

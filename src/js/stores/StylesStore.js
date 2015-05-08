@@ -11,6 +11,12 @@ var scroll = {};
 var _data = {};
 var rows = {};
 var timers = {};
+var topRow = {};
+
+
+function removeRow(gridId, rowId) {
+    delete rows[gridId][rowId];
+}
 
 function update(gridId, data) {
     _data[gridId] = data;
@@ -55,24 +61,44 @@ function setRowCellHeight(gridId, rowId, fieldId, height) {
 var StylesStore = assign({}, EventEmitter.prototype, {
     EVENTS: {
         SCROLL: 'SCROLL',
+        V_SCROLL: 'V_SCROLL',
         CELL_UPDATE: 'CELL_UPDATE'
     },
 
+    getTopRowHeight: function (gridId) {
+        return topRow[gridId] || 0;
+    },
+    loaded: 50,
     getHeader: function (gridId) {
         var data = _data[gridId];
         return data ? data.header : [];
     },
     getRows: function (gridId) {
-        //var scrollSize = StyleStore.getScrollTop(gridId);
-        //console.log(scrollSize);
+        var scrollSize = this.getScrollTop(gridId);
         var data = _data[gridId];
-        return data ? data.rows.slice(0, 50) : [];
+        var _rows = rows[gridId];
+        if (_rows) {
+            var totalHeight = 0;
+            for (var i in _rows) {
+                if (isNaN(i)) continue;
+                totalHeight += this._getRowHeight(_rows[i]);
+            }
+            if (totalHeight - scrollSize < 800) {
+                topRow[gridId] = scrollSize;
+                if (data.rows.length > this.loaded)
+                    this.loaded += 25
+            }
+
+        }
+
+
+        var result = data ? data.rows.slice(0, this.loaded) : [];
+        result.startIndex = this.loaded;
+        return result;
     },
 
     getRowHeight: function (gridId, rowId) {
-
         var row = (rows[gridId] || {})[rowId];
-
         var max = -1;
         if (row) {
             row.forEach(function (cell) {
@@ -80,12 +106,19 @@ var StylesStore = assign({}, EventEmitter.prototype, {
                     max = cell.height
                 }
             });
-
         }
-
         return max == -1 ? null : max;
     },
 
+    _getRowHeight: function (row) {
+        var max = -1;
+        row.forEach(function (cell) {
+            if (cell.height > max) {
+                max = cell.height
+            }
+        });
+        return max;
+    },
 
     getHolderWidth: function (gridId) {
         var fullW = this.getGridFullWidth(gridId);
@@ -204,6 +237,7 @@ var StylesStore = assign({}, EventEmitter.prototype, {
         event = event || '';
         this.emit(CHANGE_EVENT + gridId + event);
     },
+    /** если ожидается множество изменений за малый промежуток времени*/
     reduceEmitChange: function (gridId, event) {
         var key = gridId + event;
         if (timers[key] != null)
@@ -216,8 +250,9 @@ var StylesStore = assign({}, EventEmitter.prototype, {
         event = event || '';
         this.on(CHANGE_EVENT + gridId + event, callback);
     },
-    removeChangeListener: function (callback, gridId) {
-        this.removeListener(CHANGE_EVENT + gridId, callback);
+    removeChangeListener: function (callback, gridId, event) {
+        event = event || '';
+        this.removeListener(CHANGE_EVENT + gridId + event, callback);
     },
 
     dispatcherIndex: GridDispatcher.register(function (payload) {
@@ -233,7 +268,7 @@ var StylesStore = assign({}, EventEmitter.prototype, {
                 break;
             case StylesConstants.V_SCROLL:
                 setScroll(action.gridId, 'top', action.scrollSize);
-                StylesStore.emitChange(action.gridId);
+                StylesStore.emitChange(action.gridId, StylesStore.EVENTS.V_SCROLL);
                 break;
             case StylesConstants.PIN_COLUMN:
                 togglePinColumn(action.gridId, action.fieldId);
@@ -248,6 +283,10 @@ var StylesStore = assign({}, EventEmitter.prototype, {
             case StylesConstants.UPDATE_ROW_HEIGHT:
                 setRowCellHeight(action.gridId, action.rowId, action.fieldId, action.height);
                 StylesStore.reduceEmitChange(action.gridId, StylesStore.EVENTS.CELL_UPDATE);
+                break;
+
+            case StylesConstants.REMOVE_ROW:
+                removeRow(action.gridId, action.rowId);
                 break;
 
         }
