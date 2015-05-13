@@ -3,7 +3,7 @@ var React = require('react'),
     Body = require('./Body.react'),
     HScroller = require('./HScroller.react'),
     $ = require('jquery'),
-    StylesStore = require('../stores/StylesStore'),
+    GridsStore = require('../stores/GridsStore'),
     StylesActions = require('../actions/StylesActions'),
     GridActions = require('../actions/GridActions'),
     VScroller = require('./VScroller.react');
@@ -31,10 +31,9 @@ var Grid =
             this.gridId = Grid.getNextId();
         },
         render: function () {
-            var gridClass = 'qtable ' + StylesStore.getGridClassName(this.gridId);
+            var gridClass = 'qtable ' + GridsStore.getGridClassName(this.gridId);
             return (
                 <div className="qtable__wrapper">
-
                     <div className={gridClass}>
                         <Header gridId={this.gridId} />
                         <Body gridId={this.gridId} />
@@ -46,7 +45,7 @@ var Grid =
             var $grid = $(this.getDOMNode());
             var $parent = $grid.parent();
             StylesActions.resize(this.gridId, $parent.width());
-        },
+        }
     });
 
 

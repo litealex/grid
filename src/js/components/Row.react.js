@@ -1,13 +1,14 @@
 var React = require('react'),
+    assign = require('object-assign'),
     Cell = require('./Cell.react'),
     StylesActions = require('../actions/StylesActions'),
-    StylesStore = require('../stores/StylesStore');
+    GridsStore = require('../stores/GridsStore');
 
 
-function getStateFromStore(gridId) {
+function getStateFromStore(gridId, rowId) {
     return {
-        pinnedColumns: StylesStore.getPinnedColumns(gridId),
-
+        pinnedColumns: GridsStore.getPinnedColumns(gridId),
+        rowHeight: GridsStore.getRowHeight(gridId, rowId)
     }
 }
 
@@ -18,37 +19,36 @@ var Row = React.createClass({
             return ++this.id;
         }
     },
-    componentWillMount: function(){
+    componentWillMount: function () {
         this.rowId = Row.getNextId();
     },
     getInitialState: function () {
-        return getStateFromStore(this.props.gridId);
+        return getStateFromStore(this.props.gridId, this.rowId);
     },
     componentDidMount: function () {
 
-        StylesStore.addChangeListeners(this._onChange, this.props.gridId);
+        GridsStore.addChangeListeners(this._onChange, this.props.gridId);
     },
     componentWillUnmount: function () {
-        StylesStore.removeChangeListener(this._onChange, this.props.gridId);
+        GridsStore.removeChangeListener(this._onChange, this.props.gridId);
         StylesActions.removeRow(this.props.gridId, this.rowId);
     },
 
 
     render: function () {
-        var options = {pinnedColumns: this.state.pinnedColumns};
-        this.props.width = this.state.rowHeight;
-
-        var cells = this.props.metadata.map(function (cellMeta) {
+        var style = assign({}, this.props.options, {height: this.state.rowHeight}),
+            options = {pinnedColumns: this.state.pinnedColumns, rowHeight: this.state.rowHeight},
+            cells = this.props.metadata.map(function (cellMeta) {
             return <Cell gridId={this.props.gridId} rowId={this.rowId} options={options} cellMeta={cellMeta} cell={this.props.cells[cellMeta.fieldId]} />;
         }.bind(this));
 
 
-        return (<div style={this.props.options} className="qtable__row">{cells}</div>);
+        return (<div style={style} className="qtable__row">{cells}</div>);
     },
     rowId: null,
     _onChange: function () {
-        this.setState(getStateFromStore(this.props.gridId));
-    },
+        this.setState(getStateFromStore(this.props.gridId, this.rowId));
+    }
 
 });
 

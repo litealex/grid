@@ -1,6 +1,6 @@
 var React = require('react'),
     StylesActions = require('../actions/StylesActions'),
-    StylesStore = require('../stores/StylesStore');
+    GridsStore = require('../stores/GridsStore');
 
 
 var Cell = React.createClass({
@@ -22,7 +22,7 @@ var Cell = React.createClass({
     render: function () {
         var cellMeta = this.props.cellMeta;
         var options = this.props.options;
-        var cellClass = 'qtable__cell ' + StylesStore.getColumnClassName(cellMeta.fieldId);
+        var cellClass = 'qtable__cell ' + GridsStore.getColumnClassName(cellMeta.fieldId);
         var pinnedColumns = options.pinnedColumns;
 
         if (pinnedColumns.indexOf(cellMeta) != -1) {
@@ -30,7 +30,7 @@ var Cell = React.createClass({
         }
 
         return (
-            <div style={{height:36}} className={cellClass}>
+            <div style={{height: options.rowHeight}} className={cellClass}>
                 <div className="qtable__cell__content"  dangerouslySetInnerHTML={{__html: this.props.cell}}></div>
             </div>
         );
@@ -38,7 +38,7 @@ var Cell = React.createClass({
     nodeStyle: null,
     content: null,
     _onChange: function () {
-        this.nodeStyle.height = StylesStore.getRowHeight(this.props.gridId, this.props.rowId) + 'px';
+        this.nodeStyle.height = GridsStore.getRowHeight(this.props.gridId, this.props.rowId) + 'px';
     }
 });
 

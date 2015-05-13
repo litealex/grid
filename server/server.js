@@ -14,10 +14,10 @@ app.get('/data', function (req, res) {
         });
     }
 
-    for (i = 0; i < 100000; i++) {
+    for (i = 0; i < 1000; i++) {
         row = {};
         header.forEach(function (cell, index) {
-            row[cell.fieldId] = i + (index?'':'<br>3');
+            row[cell.fieldId] = i + (index?' ' + index:'<br>3');
         });
         rows.push(row);
     }

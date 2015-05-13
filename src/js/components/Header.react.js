@@ -1,16 +1,15 @@
 var React = require('react'),
-    $ = require('jquery'),
-    StylesStore = require('../stores/StylesStore'),
+    GridsStore = require('../stores/GridsStore'),
     HeaderCell = require('./HeaderCell.react'),
     assign = require('object-assign');
 
 
 function getStateFromStore(gridId) {
     return {
-        pinnedColumns: StylesStore.getPinnedColumns(gridId),
-        width: StylesStore.getGridWidth(gridId),
-        fullWidth: StylesStore.getGridFullWidth(gridId),
-        header: StylesStore.getHeader(gridId)
+        pinnedColumns: GridsStore.getPinnedColumns(gridId),
+        width: GridsStore.getGridWidth(gridId),
+        fullWidth: GridsStore.getGridFullWidth(gridId),
+        header: GridsStore.getHeader(gridId)
     };
 }
 
@@ -24,14 +23,14 @@ var Header = React.createClass({
     componentDidMount: function () {
         console.log('mount');
         this.node = this.getDOMNode();
-        StylesStore.addChangeListeners(this._onChange, this.props.gridId);
-        StylesStore.addChangeListeners(this._onScroll, this.props.gridId, StylesStore.EVENTS.SCROLL);
-        StylesStore.addChangeListeners(this._onCellUpdate, this.props.gridId, StylesStore.EVENTS.CELL_UPDATE);
+        GridsStore.addChangeListeners(this._onChange, this.props.gridId);
+        GridsStore.addChangeListeners(this._onScroll, this.props.gridId, GridsStore.EVENTS.SCROLL);
+        GridsStore.addChangeListeners(this._onCellUpdate, this.props.gridId, GridsStore.EVENTS.CELL_UPDATE);
     },
     componentWillUnmount: function () {
-        StylesStore.removeChangeListener(this._onChange, this.props.gridId);
-        StylesStore.removeChangeListener(this._onScroll, this.props.gridId, StylesStore.EVENTS.SCROLL);
-        StylesStore.removeChangeListener(this._onCellUpdate, this.props.gridId, StylesStore.EVENTS.CELL_UPDATE);
+        GridsStore.removeChangeListener(this._onChange, this.props.gridId);
+        GridsStore.removeChangeListener(this._onScroll, this.props.gridId, GridsStore.EVENTS.SCROLL);
+        GridsStore.removeChangeListener(this._onCellUpdate, this.props.gridId, GridsStore.EVENTS.CELL_UPDATE);
     },
 
     getInitialState: function () {
@@ -65,7 +64,9 @@ var Header = React.createClass({
         }.bind(this));
         return (
             <div style={headerStyle} className="qtable__header">
-                <div style={rowStyle} className="qtable__row qtable__row--header">{header}</div>
+                <div style={rowStyle} className="qtable__row qtable__row--header">
+                {header}
+                </div>
             </div>);
     },
     rowId: "headerRow",
@@ -80,7 +81,7 @@ var Header = React.createClass({
             this.style = document.createElement('style');
             document.head.appendChild(this.style);
         }
-        var style = StylesStore.getStyle(this.props.gridId, this.state.header);
+        var style = GridsStore.getStyle(this.props.gridId, this.state.header);
         if (this.style.textContent !== undefined) {
             this.style.textContent = style;
         } else {
@@ -96,7 +97,7 @@ var Header = React.createClass({
             this.pinStyle = document.createElement('style');
             document.head.appendChild(this.pinStyle);
         }
-        var style = StylesStore.getPinStyle(this.props.gridId, this.props.header);
+        var style = GridsStore.getPinStyle(this.props.gridId, this.props.header);
 
         if (style == this.prevStyle) {
             return;
@@ -112,12 +113,12 @@ var Header = React.createClass({
     },
     _onScroll: function () {
         this.setPinStyle();
-        this.node.scrollLeft = StylesStore.getRealScrollLeft(this.props.gridId);
+        this.node.scrollLeft = GridsStore.getRealScrollLeft(this.props.gridId);
     },
 
 
     _onCellUpdate: function () {
-        var newRowHeight = StylesStore.getRowHeight(this.props.gridId, this.rowId);
+        var newRowHeight = GridsStore.getRowHeight(this.props.gridId, this.rowId);
 
         if (this.state.rowHeight != newRowHeight) {
             this.setState({

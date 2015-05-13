@@ -1,12 +1,12 @@
 var React = require('react'),
     StylesActions = require('../actions/StylesActions'),
-    StylesStore = require('../stores/StylesStore');
+    GridsStore = require('../stores/GridsStore');
 
 function getStateFromStore(gridId) {
     return {
-        left: StylesStore.getScrollLeft(gridId),
-        width: StylesStore.getScrollWidth(gridId),
-        holderWidth: StylesStore.getHolderWidth(gridId)
+        left: GridsStore.getScrollLeft(gridId),
+        width: GridsStore.getScrollWidth(gridId),
+        holderWidth: GridsStore.getHolderWidth(gridId)
     };
 }
 
@@ -17,14 +17,14 @@ var HScroller = React.createClass({
     },
     componentDidMount: function () {
         var self = this;
-        StylesStore.addChangeListeners(this._onChange, this.props.gridId);
-        StylesStore.addChangeListeners(function () {
-            self.setState({left: StylesStore.getScrollLeft(self.props.gridId)});
-        }, this.props.gridId, StylesStore.EVENTS.SCROLL)
+        GridsStore.addChangeListeners(this._onChange, this.props.gridId);
+        GridsStore.addChangeListeners(function () {
+            self.setState({left: GridsStore.getScrollLeft(self.props.gridId)});
+        }, this.props.gridId, GridsStore.EVENTS.SCROLL)
     },
     componentWillUnmount: function () {
-        StylesStore.removeChangeListener(this._onChange, this.props.gridId);
-        StylesStore.removeChangeListener(this._onChange, this.props.gridId, StylesStore.EVENTS.SCROLL)
+        GridsStore.removeChangeListener(this._onChange, this.props.gridId);
+        GridsStore.removeChangeListener(this._onChange, this.props.gridId, GridsStore.EVENTS.SCROLL)
     },
     componentDidUpdate: function (props, state) {
 

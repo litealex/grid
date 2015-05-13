@@ -1,9 +1,9 @@
 var React = require('react'),
-    StylesStore = require('../stores/StylesStore');
+    GridsStore = require('../stores/GridsStore');
 
 function getStateFromStore(gridId) {
     return {
-        height: StylesStore.getTopRowHeight(gridId)
+        height: GridsStore.getTopRowHeight(gridId)
     };
 }
 
@@ -13,10 +13,10 @@ var TopRow = React.createClass({
         return getStateFromStore(this.props.gridId)
     },
     componentDidMount: function () {
-        StylesStore.addChangeListeners(this._onChange, this.props.gridId, StylesStore.EVENTS.V_SCROLL);
+        GridsStore.addChangeListeners(this._onChange, this.props.gridId, GridsStore.EVENTS.V_SCROLL);
     },
     componentWillUnmount: function () {
-        StylesStore.removeChangeListener(this._onChange, this.props.gridId, StylesStore.EVENTS.V_SCROLL);
+        GridsStore.removeChangeListener(this._onChange, this.props.gridId, GridsStore.EVENTS.V_SCROLL);
     },
     render: function () {
 

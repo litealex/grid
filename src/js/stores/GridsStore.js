@@ -1,20 +1,16 @@
-var StylesConstants = require('../constants/StylesConstants');
-var GridConstants = require('../constants/GridConstants');
-var GridDispatcher = require('../dispatcher/GridDispatcher');
-var EventEmitter = require('events').EventEmitter;
-var assign = require('object-assign');
+var GridConstants = require('../constants/GridConstants'),
+    GridDispatcher = require('../dispatcher/GridDispatcher'),
+    EventEmitter = require('events').EventEmitter,
+    assign = require('object-assign');
 
 
-var CHANGE_EVENT = 'change';
-var width = {};
-var scroll = {};
-var _data = {};
-var rows = {};
-var timers = {};
-var topRow = 0;
-var lastRow = 0;
-var startIndex = 0;
-var prevScroll = 0;
+var CHANGE_EVENT = 'change',
+    _width = {},
+    scroll = {},
+    _data = {},
+    _timers = {},
+    _rowsHeights = {},
+    _gridsHeights = {};
 
 function removeRow(gridId, rowId) {
     delete rows[gridId][rowId];
@@ -41,8 +37,8 @@ function setScroll(gridId, type, scrollSize) {
 
 function setRowCellHeight(gridId, rowId, fieldId, height) {
     var cell = {fieldId: fieldId, height: height};
-    rows[gridId] = rows[gridId] || {};
-    var grid = rows[gridId];
+    _rowsHeights[gridId] = _rowsHeights[gridId] || {};
+    var grid = _rowsHeights[gridId];
 
     grid[rowId] = grid[rowId] || [];
     var row = grid[rowId];
@@ -68,36 +64,26 @@ var StylesStore = assign({}, EventEmitter.prototype, {
     },
 
     getTopRowHeight: function (gridId) {
-        var scrollSize = this.getScrollTop(gridId);
-        var si = (Math.floor(scrollSize / 36) - 17);
+        var rowHeight = this.getRowHeight(gridId),
+            scrollSize = this.getScrollTop(gridId),
+            si = (Math.floor(scrollSize / rowHeight) - 17);
         if (si < 0)
             si = 0;
-        return si * 36;
+        return si * rowHeight;
     },
     getLastRowHeight: function (gridId) {
-        var data = _data[gridId];
+        var rowHeight = this.getRowHeight(gridId),
+            data = _data[gridId],
+            topRowH,
+            fullH,
+            res;
         if (!data) return 0;
-        var topRowH = this.getTopRowHeight(gridId);
-        var fullH = data.rows.length * 36;
-        var res = fullH - topRowH - 36 * 17 * 3;
+        topRowH = this.getTopRowHeight(gridId);
+        fullH = data.rows.length * rowHeight;
+        res = fullH - topRowH - rowHeight * 17 * 3;
         if (res < 0)
             res = 0;
         return res;
-    },
-    rowHeight: 36,
-    test: function (gridId) {
-        var data = _data[gridId];
-        var scrollSize = this.getScrollTop(gridId);
-        startIndex = Math.floor(scrollSize / 36) - 17;
-        if (startIndex < 0)
-            startIndex = 0;
-        if (data) {
-            lastRow = (data.rows.length - (startIndex + 17 * 3)) * 36;
-        }
-        var result = data ? data.rows.slice(startIndex, startIndex + 60) : [];
-        result.startIndex = startIndex;
-        return result;
-
     },
 
     getHeader: function (gridId) {
@@ -105,45 +91,29 @@ var StylesStore = assign({}, EventEmitter.prototype, {
         return data ? data.header : [];
     },
     getRows: function (gridId) {
-        return this.test(gridId);
-        console.log('data');
-        var totalHeight = 1800;
-        var scrollSize = this.getScrollTop(gridId) - 600;
-        var data = _data[gridId];
+        var rowHeight = this.getRowHeight(gridId),
+            data = _data[gridId],
+            scrollSize = this.getScrollTop(gridId),
+            startIndex = Math.floor(scrollSize / rowHeight) - 17;
 
-        if (data) {
-
-            if (prevScroll < scrollSize) {
-                if (scrollSize - topRow > 40 * 36)
-                    startIndex = Math.floor(scrollSize / 36)
-            } else {
-                if (scrollSize - topRow < 20 * 36)
-                    startIndex = Math.floor(scrollSize / 36) - 20;
-            }
-
-            topRow = startIndex * 36;
-            lastRow = (data.rows.length - (startIndex + 60)) * 36;
-            console.log(lastRow);
-        }
-        prevScroll = scrollSize;
-
+        if (startIndex < 0)
+            startIndex = 0;
         var result = data ? data.rows.slice(startIndex, startIndex + 60) : [];
         result.startIndex = startIndex;
         return result;
     },
 
-    getRowHeight: function (gridId) {
-        return this.rowHeight;
-    },
+    getRowHeight: function (gridId, rowId) {
+        var gridRows = _rowsHeights[gridId];
+        if (gridRows && gridRows[rowId]) {
+            return gridRows[rowId].reduce(function (h, cell) {
+                if (h > cell.height)
+                    return h;
+                return cell.height;
+            }, 0);
+        }
 
-    _getRowHeight: function (row) {
-        var max = -1;
-        row.forEach(function (cell) {
-            if (cell.height > max) {
-                max = cell.height
-            }
-        });
-        return max;
+        return 18;
     },
 
     getHolderWidth: function (gridId) {
@@ -185,8 +155,9 @@ var StylesStore = assign({}, EventEmitter.prototype, {
             return !cell.isPin;
         });
 
-        if (fullScroll == maxScroll)
+        if (fullScroll == maxScroll) {
             return maxScroll;
+        }
 
         for (var i = 0; i < scrollableHeader.length; i++) {
             if (scrollByColumns + scrollableHeader[i].width > fullScroll) {
@@ -194,17 +165,19 @@ var StylesStore = assign({}, EventEmitter.prototype, {
             }
             scrollByColumns += scrollableHeader[i].width;
         }
+
         return scrollByColumns;
     },
     getGridClassName: function (gridId) {
-        return StylesConstants.GRID_STYLE_PREFIX + gridId;
+        return GridConstants.GRID_STYLE_PREFIX + gridId;
     },
     getColumnClassName: function (filedId) {
-        return StylesConstants.COLUMN_STYLE_PREFIX + filedId;
+        return GridConstants.COLUMN_STYLE_PREFIX + filedId;
     },
     getStyle: function (gridId, header) {
         var gridClass = '.' + this.getGridClassName(gridId);
         var left = this.getRealScrollLeft(gridId);
+
         return header.map(function (cell) {
             var styleRow = gridClass + ' .' + this.getColumnClassName(cell.fieldId)
                 + '{ min-width: ' + cell.width + 'px; width: ' + cell.width + 'px;}';
@@ -229,7 +202,7 @@ var StylesStore = assign({}, EventEmitter.prototype, {
 
     /** ширина видимой части таблицы */
     getGridWidth: function (gridId) {
-        return (width[gridId] || 0) - 20;
+        return (_width[gridId] || 0) - 20;
     },
 
     /** ширина всей таблицы, включая невидимую часть */
@@ -244,9 +217,10 @@ var StylesStore = assign({}, EventEmitter.prototype, {
     },
     getPinnedColumns: function (gridId) {
         var columns = this.getHeader(gridId);
-        return columns.filter(function (cell) {
+        var cols = columns.filter(function (cell) {
             return cell.isPin;
         });
+        return cols;
     },
 
 
@@ -266,9 +240,9 @@ var StylesStore = assign({}, EventEmitter.prototype, {
     /** если ожидается множество изменений за малый промежуток времени*/
     reduceEmitChange: function (gridId, event) {
         var key = gridId + event;
-        if (timers[key] != null)
-            clearTimeout(timers[key]);
-        timers[key] = setTimeout(function () {
+        if (_timers[key] != null)
+            clearTimeout(_timers[key]);
+        _timers[key] = setTimeout(function () {
             StylesStore.emitChange(gridId, event);
         }, 15);
     },
@@ -284,19 +258,19 @@ var StylesStore = assign({}, EventEmitter.prototype, {
     dispatcherIndex: GridDispatcher.register(function (payload) {
         var action = payload.action;
         switch (action.actionType) {
-            case StylesConstants.RESIZE:
-                width[action.gridId] = action.width;
+            case GridConstants.RESIZE:
+                _width[action.gridId] = action.width;
                 StylesStore.emitChange(action.gridId);
                 break;
-            case StylesConstants.H_SCROLL:
+            case GridConstants.H_SCROLL:
                 setScroll(action.gridId, 'left', action.scrollSize);
                 StylesStore.emitChange(action.gridId, StylesStore.EVENTS.SCROLL);
                 break;
-            case StylesConstants.V_SCROLL:
+            case GridConstants.V_SCROLL:
                 setScroll(action.gridId, 'top', action.scrollSize);
                 StylesStore.emitChange(action.gridId, StylesStore.EVENTS.V_SCROLL);
                 break;
-            case StylesConstants.PIN_COLUMN:
+            case GridConstants.PIN_COLUMN:
                 togglePinColumn(action.gridId, action.fieldId);
                 StylesStore.emitChange(action.gridId);
                 break;
@@ -306,12 +280,12 @@ var StylesStore = assign({}, EventEmitter.prototype, {
                 StylesStore.emitChange(action.gridId);
                 break;
 
-            case StylesConstants.UPDATE_ROW_HEIGHT:
+            case GridConstants.UPDATE_HEADER_ROW_HEIGHT:
                 setRowCellHeight(action.gridId, action.rowId, action.fieldId, action.height);
                 StylesStore.reduceEmitChange(action.gridId, StylesStore.EVENTS.CELL_UPDATE);
                 break;
 
-            case StylesConstants.REMOVE_ROW:
+            case GridConstants.REMOVE_ROW:
                 removeRow(action.gridId, action.rowId);
                 break;
 
@@ -321,4 +295,6 @@ var StylesStore = assign({}, EventEmitter.prototype, {
 });
 
 StylesStore.setMaxListeners(0);
+
+
 module.exports = StylesStore;

@@ -1,10 +1,10 @@
-var GridDispatcher = require('../dispatcher/GridDispatcher');
-var StylesConstants = require('../constants/StylesConstants');
+var GridDispatcher = require('../dispatcher/GridDispatcher'),
+    GridConstants = require('../constants/GridConstants');
 
 var StylesActions = {
     resize: function (gridId, width) {
         GridDispatcher.handleViewAction({
-            actionType: StylesConstants.RESIZE,
+            actionType: GridConstants.RESIZE,
             gridId: gridId,
             width: width
         });
@@ -12,28 +12,28 @@ var StylesActions = {
 
     hScroll: function (gridId, scrollSize) {
         GridDispatcher.handleViewAction({
-            actionType: StylesConstants.H_SCROLL,
+            actionType: GridConstants.H_SCROLL,
             gridId: gridId,
             scrollSize: scrollSize
         });
     },
     vScroll: function (gridId, scrollSize) {
         GridDispatcher.handleViewAction({
-            actionType: StylesConstants.V_SCROLL,
+            actionType: GridConstants.V_SCROLL,
             gridId: gridId,
             scrollSize: scrollSize
         });
     },
     pinColumn: function (gridId, fieldId) {
         GridDispatcher.handleViewAction({
-            actionType: StylesConstants.PIN_COLUMN,
+            actionType: GridConstants.PIN_COLUMN,
             gridId: gridId,
             fieldId: fieldId
         });
     },
-    updateRowCellHeight: function (gridId, rowId, fieldId, height) {
+    updateHeaderRowHeight: function (gridId, rowId, fieldId, height) {
         GridDispatcher.handleViewAction({
-            actionType: StylesConstants.UPDATE_ROW_HEIGHT,
+            actionType: GridConstants.UPDATE_HEADER_ROW_HEIGHT,
             gridId: gridId,
             rowId: rowId,
             fieldId: fieldId,
@@ -42,7 +42,7 @@ var StylesActions = {
     },
     removeRow: function(gridId, rowId){
         GridDispatcher.handleViewAction({
-            actionType: StylesConstants.REMOVE_ROW,
+            actionType: GridConstants.REMOVE_ROW,
             gridId: gridId,
             rowId: rowId
         });
