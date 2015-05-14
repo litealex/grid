@@ -20,7 +20,6 @@ var LastRow = React.createClass({
         return (<div style={this.state} className="qtable__row qtable__row--last"></div>);
     },
     _onChange: function () {
-        console.log(1);
         this.setState(getStateFromStore(this.props.gridId));
     }
 });

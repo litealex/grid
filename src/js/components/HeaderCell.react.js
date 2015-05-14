@@ -16,11 +16,11 @@ var HeaderCell = React.createClass({
 
         this.content = node.querySelector('.qtable__cell__content');
         StylesStore.addChangeListeners(this._onChange, p.gridId, StylesStore.EVENTS.CELL_UPDATE);
-        StylesActions.updateRowCellHeight(p.gridId, p.rowId, p.cell.fieldId, this.content.offsetHeight);
+        StylesActions.updateHeaderRowCellHeight(p.gridId, p.rowId, p.cell.fieldId, this.content.offsetHeight);
     },
     componentDidUpdate: function () {
         var p = this.props;
-        StylesActions.updateRowCellHeight(p.gridId, p.rowId, p.cell.fieldId, this.content.offsetHeight);
+        StylesActions.updateHeaderRowCellHeight(p.gridId, p.rowId, p.cell.fieldId, this.content.offsetHeight);
     },
     render: function () {
         var style = {left: this.state.left};

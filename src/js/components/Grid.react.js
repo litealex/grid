@@ -45,7 +45,7 @@ var Grid =
         _resize: function () {
             var $grid = $(this.getDOMNode());
             var $parent = $grid.parent();
-            StylesActions.resize(this.gridId, $parent.width());
+            StylesActions.resize(this.gridId, $parent.width(), $parent.height());
         },
     });
 

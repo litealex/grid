@@ -2,10 +2,11 @@ var GridDispatcher = require('../dispatcher/GridDispatcher');
 var StylesConstants = require('../constants/StylesConstants');
 
 var StylesActions = {
-    resize: function (gridId, width) {
+    resize: function (gridId, width, height) {
         GridDispatcher.handleViewAction({
             actionType: StylesConstants.RESIZE,
             gridId: gridId,
+            height: height,
             width: width
         });
     },
@@ -31,13 +32,14 @@ var StylesActions = {
             fieldId: fieldId
         });
     },
-    updateRowCellHeight: function (gridId, rowId, fieldId, height) {
+    updateHeaderRowCellHeight: function (gridId, rowId, fieldId, height) {
         GridDispatcher.handleViewAction({
             actionType: StylesConstants.UPDATE_ROW_HEIGHT,
             gridId: gridId,
             rowId: rowId,
             fieldId: fieldId,
-            height: height
+            height: height,
+            type: StylesConstants.ROW_TYPES.HEADER
         });
     },
     removeRow: function(gridId, rowId){

@@ -8,5 +8,9 @@ module.exports = {
     V_SCROLL: 'V_SCROLL',
     PIN_COLUMN: 'PIN_COLUMN',
     UPDATE_ROW_HEIGHT: 'UPDATE_ROW_HEIGHT',
-    REMOVE_ROW: 'REMOVE_ROW'
+    REMOVE_ROW: 'REMOVE_ROW',
+    ROW_TYPES: {
+        HEADER: 'HEADER',
+        DATA: 'DATA'
+    }
 };

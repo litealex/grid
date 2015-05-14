@@ -22,6 +22,7 @@ var Cell = React.createClass({
     render: function () {
         var cellMeta = this.props.cellMeta;
         var options = this.props.options;
+
         var cellClass = 'qtable__cell ' + StylesStore.getColumnClassName(cellMeta.fieldId);
         var pinnedColumns = options.pinnedColumns;
 
@@ -30,7 +31,7 @@ var Cell = React.createClass({
         }
 
         return (
-            <div style={{height:36}} className={cellClass}>
+            <div style={{height:options.rowHeight}} className={cellClass}>
                 <div className="qtable__cell__content"  dangerouslySetInnerHTML={{__html: this.props.cell}}></div>
             </div>
         );

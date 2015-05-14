@@ -6,8 +6,7 @@ var React = require('react'),
 
 function getStateFromStore(gridId) {
     return {
-        pinnedColumns: StylesStore.getPinnedColumns(gridId),
-
+        pinnedColumns: StylesStore.getPinnedColumns(gridId)
     }
 }
 
@@ -25,7 +24,6 @@ var Row = React.createClass({
         return getStateFromStore(this.props.gridId);
     },
     componentDidMount: function () {
-
         StylesStore.addChangeListeners(this._onChange, this.props.gridId);
     },
     componentWillUnmount: function () {
@@ -35,8 +33,10 @@ var Row = React.createClass({
 
 
     render: function () {
-        var options = {pinnedColumns: this.state.pinnedColumns};
-        this.props.width = this.state.rowHeight;
+        var options = {
+            pinnedColumns: this.state.pinnedColumns,
+            rowHeight: this.props.options.height
+        };
 
         var cells = this.props.metadata.map(function (cellMeta) {
             return <Cell gridId={this.props.gridId} rowId={this.rowId} options={options} cellMeta={cellMeta} cell={this.props.cells[cellMeta.fieldId]} />;
