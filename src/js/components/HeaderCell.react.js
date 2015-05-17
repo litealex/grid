@@ -1,5 +1,5 @@
 var React = require('react');
-var StylesStore = require('../stores/StylesStore');
+var GridStore = require('../stores/GridStore');
 var StylesActions = require('../actions/StylesActions');
 
 var HeaderCell = React.createClass({
@@ -15,7 +15,7 @@ var HeaderCell = React.createClass({
         this.nodeStyle = node.style;
 
         this.content = node.querySelector('.qtable__cell__content');
-        StylesStore.addChangeListeners(this._onChange, p.gridId, StylesStore.EVENTS.CELL_UPDATE);
+        GridStore.addChangeListeners(this._onChange, p.gridId, GridStore.EVENTS.CELL_UPDATE);
         StylesActions.updateHeaderRowCellHeight(p.gridId, p.rowId, p.cell.fieldId, this.content.offsetHeight);
     },
     componentDidUpdate: function () {
@@ -25,7 +25,7 @@ var HeaderCell = React.createClass({
     render: function () {
         var style = {left: this.state.left};
         var cell = this.props.cell;
-        var cellClass = 'qtable__cell ' + StylesStore.getColumnClassName(cell.fieldId);
+        var cellClass = 'qtable__cell ' + GridStore.getColumnClassName(cell.fieldId);
         if (this.props.options.isPinned) {
             cellClass += ' qtable__cell--pin';
         }
@@ -39,7 +39,7 @@ var HeaderCell = React.createClass({
     nodeStyle: null,
     content: null,
     _onChange: function () {
-        this.nodeStyle.height = StylesStore.getRowHeight(this.props.gridId, this.props.rowId) + 'px';
+        this.nodeStyle.height = GridStore.getRowHeight(this.props.gridId, this.props.rowId) + 'px';
     }
 
 });

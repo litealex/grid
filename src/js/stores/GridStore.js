@@ -27,7 +27,7 @@ function update(gridId, data) {
 }
 
 function togglePinColumn(gridId, fieldId) {
-    StylesStore.getHeader(gridId).forEach(function (cell) {
+    GridStore.getHeader(gridId).forEach(function (cell) {
         if (cell.fieldId == fieldId) {
             cell.isPin = !cell.isPin;
         }
@@ -64,7 +64,7 @@ function setRowCellHeight(gridId, rowId, fieldId, height, type) {
 
 }
 
-var StylesStore = assign({}, EventEmitter.prototype, {
+var GridStore = assign({}, EventEmitter.prototype, {
     EVENTS: {
         SCROLL: 'SCROLL',
         V_SCROLL: 'V_SCROLL',
@@ -154,6 +154,9 @@ var StylesStore = assign({}, EventEmitter.prototype, {
 
         var p = barWidth / fullW;
 
+        if (p >= 1)
+            return -1;
+
         return p * barWidth;
     },
     getScrollTop: function (gridId) {
@@ -204,12 +207,13 @@ var StylesStore = assign({}, EventEmitter.prototype, {
     getColumnClassName: function (filedId) {
         return StylesConstants.COLUMN_STYLE_PREFIX + filedId;
     },
-    getStyle: function (gridId, header) {
-        var gridClass = '.' + this.getGridClassName(gridId);
-        var left = this.getRealScrollLeft(gridId);
+    getStyle: function (gridId) {
+        var gridClass = '.' + this.getGridClassName(gridId),
+            header = this.getHeader(gridId),
+            left = this.getRealScrollLeft(gridId);
         return header.map(function (cell) {
             var styleRow = gridClass + ' .' + this.getColumnClassName(cell.fieldId)
-                + '{ min-width: ' + cell.width + 'px; width: ' + cell.width + 'px;}';
+                + '{ max-width: ' + cell.width + 'px; min-width: ' + cell.width + 'px; width: ' + cell.width + 'px; overflow: hidden;}';
 
             left += cell.width;
             return styleRow;
@@ -274,7 +278,7 @@ var StylesStore = assign({}, EventEmitter.prototype, {
         if (_timers[key] != null)
             clearTimeout(_timers[key]);
         _timers[key] = setTimeout(function () {
-            StylesStore.emitChange(gridId, event);
+            GridStore.emitChange(gridId, event);
         }, 15);
     },
     addChangeListeners: function (callback, gridId, event) {
@@ -291,29 +295,29 @@ var StylesStore = assign({}, EventEmitter.prototype, {
         switch (action.actionType) {
             case StylesConstants.RESIZE:
                 setGridSize(action.gridId, action.width, action.height);
-                StylesStore.emitChange(action.gridId);
+                GridStore.emitChange(action.gridId);
                 break;
             case StylesConstants.H_SCROLL:
                 setScroll(action.gridId, 'left', action.scrollSize);
-                StylesStore.emitChange(action.gridId, StylesStore.EVENTS.SCROLL);
+                GridStore.emitChange(action.gridId, GridStore.EVENTS.SCROLL);
                 break;
             case StylesConstants.V_SCROLL:
                 setScroll(action.gridId, 'top', action.scrollSize);
-                StylesStore.emitChange(action.gridId, StylesStore.EVENTS.V_SCROLL);
+                GridStore.emitChange(action.gridId, GridStore.EVENTS.V_SCROLL);
                 break;
             case StylesConstants.PIN_COLUMN:
                 togglePinColumn(action.gridId, action.fieldId);
-                StylesStore.emitChange(action.gridId);
+                GridStore.emitChange(action.gridId);
                 break;
 
             case GridConstants.UPDATE_DATA:
                 update(action.gridId, {rows: action.rows, header: action.header});
-                StylesStore.emitChange(action.gridId);
+                GridStore.emitChange(action.gridId);
                 break;
 
             case StylesConstants.UPDATE_ROW_HEIGHT:
                 setRowCellHeight(action.gridId, action.rowId, action.fieldId, action.height, action.type);
-                StylesStore.reduceEmitChange(action.gridId, StylesStore.EVENTS.CELL_UPDATE);
+                GridStore.reduceEmitChange(action.gridId, GridStore.EVENTS.CELL_UPDATE);
                 break;
 
             case StylesConstants.REMOVE_ROW:
@@ -325,5 +329,5 @@ var StylesStore = assign({}, EventEmitter.prototype, {
     })
 });
 
-StylesStore.setMaxListeners(0);
-module.exports = StylesStore;
+GridStore.setMaxListeners(0);
+module.exports = GridStore;

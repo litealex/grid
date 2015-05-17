@@ -1,12 +1,12 @@
 var React = require('react'),
     Cell = require('./Cell.react'),
     StylesActions = require('../actions/StylesActions'),
-    StylesStore = require('../stores/StylesStore');
+    GridStore = require('../stores/GridStore');
 
 
 function getStateFromStore(gridId) {
     return {
-        pinnedColumns: StylesStore.getPinnedColumns(gridId)
+        pinnedColumns: GridStore.getPinnedColumns(gridId)
     }
 }
 
@@ -24,10 +24,10 @@ var Row = React.createClass({
         return getStateFromStore(this.props.gridId);
     },
     componentDidMount: function () {
-        StylesStore.addChangeListeners(this._onChange, this.props.gridId);
+        GridStore.addChangeListeners(this._onChange, this.props.gridId);
     },
     componentWillUnmount: function () {
-        StylesStore.removeChangeListener(this._onChange, this.props.gridId);
+        GridStore.removeChangeListener(this._onChange, this.props.gridId);
         StylesActions.removeRow(this.props.gridId, this.rowId);
     },
 

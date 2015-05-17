@@ -1,15 +1,14 @@
 var gulp = require('gulp'),
-    gutil = require('gulp-util')
+    gutil = require('gulp-util'),
     less = require('gulp-less'),
     browserify = require('gulp-browserify'),
-    nodemon = require('gulp-nodemon'),
     concat = require('gulp-concat');
 
-gulp.task('browserify', function () {
-    gulp.src('./src/js/app.js')
+gulp.task('jquery.plugin', function () {
+    gulp.src('./src/js/jquery.grid.js')
         .pipe(browserify({transform: 'reactify'}))
         .on('error', gutil.log)
-        .pipe(concat('grid.js'))
+        .pipe(concat('jquery.grid.js'))
         .pipe(gulp.dest('dist/js'))
 });
 
@@ -36,7 +35,7 @@ gulp.task('server', function(){
 
 
 
-gulp.task('default', ['browserify', 'copy', 'less']);
+gulp.task('default', ['jquery.plugin', 'copy', 'less']);
 
 
 gulp.task('watch', function () {

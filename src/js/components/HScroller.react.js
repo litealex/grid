@@ -1,12 +1,12 @@
 var React = require('react'),
     StylesActions = require('../actions/StylesActions'),
-    StylesStore = require('../stores/StylesStore');
+    GridStore = require('../stores/GridStore');
 
 function getStateFromStore(gridId) {
     return {
-        left: StylesStore.getScrollLeft(gridId),
-        width: StylesStore.getScrollWidth(gridId),
-        holderWidth: StylesStore.getHolderWidth(gridId)
+        left: GridStore.getScrollLeft(gridId),
+        width: GridStore.getScrollWidth(gridId),
+        holderWidth: GridStore.getHolderWidth(gridId)
     };
 }
 
@@ -17,14 +17,14 @@ var HScroller = React.createClass({
     },
     componentDidMount: function () {
         var self = this;
-        StylesStore.addChangeListeners(this._onChange, this.props.gridId);
-        StylesStore.addChangeListeners(function () {
-            self.setState({left: StylesStore.getScrollLeft(self.props.gridId)});
-        }, this.props.gridId, StylesStore.EVENTS.SCROLL)
+        GridStore.addChangeListeners(this._onChange, this.props.gridId);
+        GridStore.addChangeListeners(function () {
+            self.setState({left: GridStore.getScrollLeft(self.props.gridId)});
+        }, this.props.gridId, GridStore.EVENTS.SCROLL)
     },
     componentWillUnmount: function () {
-        StylesStore.removeChangeListener(this._onChange, this.props.gridId);
-        StylesStore.removeChangeListener(this._onChange, this.props.gridId, StylesStore.EVENTS.SCROLL)
+        GridStore.removeChangeListener(this._onChange, this.props.gridId);
+        GridStore.removeChangeListener(this._onChange, this.props.gridId, GridStore.EVENTS.SCROLL)
     },
     componentDidUpdate: function (props, state) {
 
@@ -41,7 +41,10 @@ var HScroller = React.createClass({
             left: this.state.left,
             width: this.state.holderWidth
         };
-        var scrollbarStyle = {width: this.state.width};
+        var scrollbarStyle = {
+            width: this.state.width,
+            display: this.state.holderWidth == -1 ? 'none' : 'block'
+        };
         return (
             <div style={scrollbarStyle} className="h_scrollbar">
                 <div onMouseDown={this._onMouseDown} style={holderStyle} className="h_scrollbar__holder"></div>

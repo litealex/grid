@@ -2,19 +2,19 @@ var React = require('react'),
     TopRow = require('./TopRow.react'),
     LastRow = require('./LastRow.react'),
     Row = require('./Row.react'),
-    StylesStore = require('../stores/StylesStore'),
+    GridStore = require('../stores/GridStore'),
     StylesActions = require('../actions/StylesActions');
 
 
 function getStateFromStore(gridId) {
     return {
-        pinnedColumns: StylesStore.getPinnedColumns(gridId),
-        width: StylesStore.getGridWidth(gridId),
-        height: StylesStore.getGridHeight(gridId),
-        rowHeight: StylesStore.getRowHeight(gridId),
-        fullWidth: StylesStore.getGridFullWidth(gridId),
-        rows: StylesStore.getRows(gridId),
-        header: StylesStore.getHeader(gridId)
+        pinnedColumns: GridStore.getPinnedColumns(gridId),
+        width: GridStore.getGridWidth(gridId),
+        height: GridStore.getGridHeight(gridId),
+        rowHeight: GridStore.getRowHeight(gridId),
+        fullWidth: GridStore.getGridFullWidth(gridId),
+        rows: GridStore.getRows(gridId),
+        header: GridStore.getHeader(gridId)
     };
 }
 
@@ -28,14 +28,14 @@ var Body = React.createClass({
         this.node.scrollTop = 0;
         this.node.addEventListener('scroll', this._scrollHandler);
 
-        StylesStore.addChangeListeners(this._onChange, this.props.gridId);
-        StylesStore.addChangeListeners(this._onScroll, this.props.gridId, StylesStore.EVENTS.SCROLL);
-        StylesStore.addChangeListeners(this._onVScroll, this.props.gridId, StylesStore.EVENTS.V_SCROLL);
+        GridStore.addChangeListeners(this._onChange, this.props.gridId);
+        GridStore.addChangeListeners(this._onScroll, this.props.gridId, GridStore.EVENTS.SCROLL);
+        GridStore.addChangeListeners(this._onVScroll, this.props.gridId, GridStore.EVENTS.V_SCROLL);
     },
     componentWillUnmount: function () {
-        StylesStore.removeChangeListener(this._onChange, this.props.gridId);
-        StylesStore.removeChangeListener(this._onScroll, this.props.gridId, StylesStore.EVENTS.SCROLL);
-        StylesStore.removeChangeListener(this._onVScroll, this.props.gridId, StylesStore.EVENTS.V_SCROLL);
+        GridStore.removeChangeListener(this._onChange, this.props.gridId);
+        GridStore.removeChangeListener(this._onScroll, this.props.gridId, GridStore.EVENTS.SCROLL);
+        GridStore.removeChangeListener(this._onVScroll, this.props.gridId, GridStore.EVENTS.V_SCROLL);
     },
     render: function () {
         var renderRows = null,
@@ -74,11 +74,11 @@ var Body = React.createClass({
         this.setState(getStateFromStore(this.props.gridId));
     },
     _onScroll: function () {
-        this.node.scrollLeft = StylesStore.getRealScrollLeft(this.props.gridId);
+        this.node.scrollLeft = GridStore.getRealScrollLeft(this.props.gridId);
     },
 
     _onVScroll: function () {
-        var rows = StylesStore.getRows(this.props.gridId);
+        var rows = GridStore.getRows(this.props.gridId);
 
         if (this.state.startIndex != rows.startIndex) {
             this.setState({

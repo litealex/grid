@@ -10,13 +10,17 @@
 </head>
 <body>
 
-<div id="main" style="width: 1500px; height: 600px" class="container"></div>
-<br/>
-<br/>
-<br/>
-<div id="main2" style="width: 900px; height: 300px" class="container"></div>
+<div id="main" style="width: 900px; height: 600px" class="container"></div>
+
 
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-<script src="js/grid.js"></script>
+<script src="js/jquery.grid.js"></script>
+<script>
+    $.ajax({
+        url: '/data'
+    }).success(function(data){
+        $('#main').reactGrid(data);
+    });
+</script>
 </body>
 </html>

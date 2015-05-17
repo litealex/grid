@@ -1,8 +1,8 @@
 var React = require('react'),
-    StylesStore = require('../stores/StylesStore');
+    GridStore = require('../stores/GridStore');
 function getStateFromStore(gridId) {
     return {
-        height: StylesStore.getLastRowHeight(gridId)
+        height: GridStore.getLastRowHeight(gridId)
     };
 }
 var LastRow = React.createClass({
@@ -10,11 +10,11 @@ var LastRow = React.createClass({
         return getStateFromStore(this.props.gridId)
     },
     componentDidMount: function () {
-        StylesStore.addChangeListeners(this._onChange, this.props.gridId);
-        StylesStore.addChangeListeners(this._onChange, this.props.gridId, StylesStore.EVENTS.V_SCROLL);
+        GridStore.addChangeListeners(this._onChange, this.props.gridId);
+        GridStore.addChangeListeners(this._onChange, this.props.gridId, GridStore.EVENTS.V_SCROLL);
     },
     componentWillUnmount: function () {
-        StylesStore.removeChangeListener(this._onChange, this.props.gridId, StylesStore.EVENTS.V_SCROLL);
+        GridStore.removeChangeListener(this._onChange, this.props.gridId, GridStore.EVENTS.V_SCROLL);
     },
     render: function () {
         return (<div style={this.state} className="qtable__row qtable__row--last"></div>);
