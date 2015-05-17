@@ -1,5 +1,5 @@
 var React = require('react'),
-    Cell = require('./Cell.react'),
+    CellsProvider = require('../providers/CellsProvider'),
     StylesActions = require('../actions/StylesActions'),
     GridStore = require('../stores/GridStore');
 
@@ -17,7 +17,7 @@ var Row = React.createClass({
             return ++this.id;
         }
     },
-    componentWillMount: function(){
+    componentWillMount: function () {
         this.rowId = Row.getNextId();
     },
     getInitialState: function () {
@@ -30,8 +30,6 @@ var Row = React.createClass({
         GridStore.removeChangeListener(this._onChange, this.props.gridId);
         StylesActions.removeRow(this.props.gridId, this.rowId);
     },
-
-
     render: function () {
         var options = {
             pinnedColumns: this.state.pinnedColumns,
@@ -39,16 +37,23 @@ var Row = React.createClass({
         };
 
         var cells = this.props.metadata.map(function (cellMeta) {
-            return <Cell gridId={this.props.gridId} rowId={this.rowId} options={options} cellMeta={cellMeta} cell={this.props.cells[cellMeta.fieldId]} />;
+            var Cell = CellsProvider.getCell({meta:cellMeta, cell: this.props.cells[cellMeta.fieldId]});
+            return <Cell gridId={this.props.gridId} rowId={this.rowId}
+                options={options} cellMeta={cellMeta} cell={this.props.cells[cellMeta.fieldId]} />;
         }.bind(this));
 
 
-        return (<div style={this.props.options} className="qtable__row">{cells}</div>);
+        return (<div style={this.props.options} {...this.getAttrs()} className="qtable__row">{cells}</div>);
+    },
+    getAttrs: function () {
+        if (this.rowId === 3)
+            return {style: {backgroundColor: 'red'}};
+        return {};
     },
     rowId: null,
     _onChange: function () {
         this.setState(getStateFromStore(this.props.gridId));
-    },
+    }
 
 });
 

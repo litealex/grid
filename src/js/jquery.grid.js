@@ -1,4 +1,6 @@
 var Grid = require('./components/Grid.react'),
+    CellInput = require('./components/CellInput.react'),
+    CellsProvider = require('./providers/CellsProvider'),
     React = require('react'),
     StylesActions = require('./actions/StylesActions'),
     GridStore = require('./stores/GridStore');
@@ -13,6 +15,11 @@ var actions = {
 function init(options) {
     var $this = $(this),
         grid = <Grid rows={options.rows} header={options.header} />;
+
+    if(options.cellsProvider){
+        CellsProvider.add(options.cellsProvider);
+    }
+
     React.render(grid, this);
     $this.data('gridId', grid.type.id);
 }
@@ -47,6 +54,10 @@ $.fn.reactGrid = function () {
     });
 
 
+};
+
+window.cellsProvider = function(){
+    return CellInput;
 };
 
 

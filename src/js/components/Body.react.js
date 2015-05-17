@@ -89,7 +89,6 @@ var Body = React.createClass({
 
     },
     _scrollHandler: function (e) {
-
         StylesActions.vScroll(this.props.gridId, e.target.scrollTop);
     }
 });

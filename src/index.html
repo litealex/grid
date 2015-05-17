@@ -10,7 +10,12 @@
 </head>
 <body>
 
-<div id="main" style="width: 900px; height: 600px" class="container"></div>
+<div id="main1" style="width: 900px; height: 600px" class="container"></div>
+<br/>
+<br/>
+<br/>
+
+<div id="main2" style="width: 900px; height: 600px" class="container"></div>
 
 
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
@@ -18,8 +23,13 @@
 <script>
     $.ajax({
         url: '/data'
-    }).success(function(data){
-        $('#main').reactGrid(data);
+    }).success(function (data) {
+        $('#main1').reactGrid({
+            rows: data.rows,
+            header: data.header,
+            cellsProvider: cellsProvider
+        });
+        $('#main2').reactGrid(data);
     });
 </script>
 </body>

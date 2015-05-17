@@ -63,10 +63,6 @@ var Header = React.createClass({
         this.setPinStyle();
     },
     node: null
-
-
-
-
 });
 
 module.exports = Header;
