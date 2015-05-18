@@ -43,7 +43,7 @@ var Row = React.createClass({
         }.bind(this));
 
 
-        return (<div style={this.props.options} {...this.getAttrs()} className="qtable__row">{cells}</div>);
+        return (<div style={this.props.options} className="qtable__row">{cells}</div>);
     },
     getAttrs: function () {
         if (this.rowId === 3)
